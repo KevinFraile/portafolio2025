@@ -106,19 +106,25 @@ export class HomeComponent implements AfterViewInit {
     this.inicializarVideoScroll()
     this.animacionCard()
   }
-  preloadedImages: HTMLImageElement[] = [];
+
+  preloadedFramesClaro: HTMLImageElement[] = [];
+  preloadedFramesOscuro: HTMLImageElement[] = [];
 
   preloadFrames(): void {
-
-    this.preloadedImages = []; // limpiar por si acaso
+    this.preloadedFramesClaro = [];
+    this.preloadedFramesOscuro = [];
 
     for (let i = 0; i < this.totalFrames; i++) {
       const padded = String(i).padStart(3, '0');
-      const img = new Image();
-      img.src = this.framePath(i);
-      this.preloadedImages.push(img);
-    }
 
+      const imgClaro = new Image();
+      imgClaro.src = `assets/scroll-video/frame_${padded}.jpg`;
+      this.preloadedFramesClaro.push(imgClaro);
+
+      const imgOscuro = new Image();
+      imgOscuro.src = `assets/scroll-video-oscuro/frame_${padded}.jpg`;
+      this.preloadedFramesOscuro.push(imgOscuro);
+    }
   }
 
 
@@ -229,12 +235,13 @@ export class HomeComponent implements AfterViewInit {
         scrub: 0.5
       },
       onUpdate: () => {
-        const currentFrame = Math.floor(obj.frame);
-        const preloaded = this.preloadedImages[currentFrame];
-        if (preloaded?.src) {
-          image.src = preloaded.src;
-        }
-      }
+  const currentFrame = Math.floor(obj.frame);
+  const images = this.modoOscuro ? this.preloadedFramesOscuro : this.preloadedFramesClaro;
+  const preloaded = images[currentFrame];
+  if (preloaded?.src) {
+    image.src = preloaded.src;
+  }
+}
     });
   }
 
