@@ -43,9 +43,7 @@ export class AppComponent {
       this.renderer.removeClass(document.body, 'dark-theme');
       this.renderer.addClass(document.body, themeClass);
 
-      // 🔁 Reinicializa el scroll de video
-      this.home.ngAfterViewInit();
-
+   
     }, 1000);
 
     setTimeout(() => {
