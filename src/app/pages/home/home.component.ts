@@ -101,10 +101,19 @@ export class HomeComponent implements AfterViewInit {
 
 
   ngAfterViewInit(): void {
+    this.preloadFrames();
     this.setupVideoObserver();
     this.inicializarVideoScroll()
     this.animacionCard()
   }
+
+  preloadFrames(): void {
+  for (let i = 0; i < this.totalFrames; i++) {
+    const img = new Image();
+    img.src = this.framePath(i);
+  }
+}
+
 
   // ⏯️ Reproducir desde cierto segundo
   iniciarDesde(): void {
