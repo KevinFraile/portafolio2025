@@ -1,1 +1,66 @@
 /* You can add global styles to this file, and also import other style files */
+
+
+
+
+body{
+  background-color: #eee6d4;
+  overflow-x: hidden;
+}
+
+
+
+
+.text-titulos {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 3rem;
+  font-weight: 700;
+}
+
+.text-medium {
+  font-family: 'Quicksand', sans-serif;
+  font-weight: 500;
+  font-size: 1.3rem;
+}
+
+.text-peque {
+  font-family: "JetBrains Mono", monospace;
+  font-weight: 100;
+  font-size: 1.1rem;
+}
+
+
+.light-theme{
+  background-color: #eee6d4;
+  color: #111;
+  
+}
+
+.dark-theme{
+  background-color: #000000 !important;
+  color: #f4f4f4;
+}
+
+.conocimientosModoOscuro{
+  border-top:solid 4px white ;
+  border-bottom:solid 4px white ;
+  background-color: #000000 !important;
+  color: #f4f4f4;
+}
+
+
+
+.theme-toggle-btn {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  background-color: #333;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  padding: 10px 15px;
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}

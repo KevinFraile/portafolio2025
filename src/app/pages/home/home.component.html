@@ -1,0 +1,155 @@
+<div class="">
+
+
+
+    <div class="row presentacion">
+
+        <div class="col-12 col-md-6">
+
+            @if (zorroVideoSaludoSaludo){
+            <div (click)="reproducir('saludo')" class="zorro-wrapper animate__animated animate__bounceIn">
+
+                @if (modoOscuro == true) {
+                <video id="zorroVideoSaludoSaludo" #zorroVideoSaludoSaludo src="./assets/saludoModoOscuro.mp4" muted
+                    playsinline (timeupdate)="checkTime('saludo')" autoplay (loadedmetadata)="iniciarDesde()"></video>
+                }@else {
+                <video id="zorroVideoSaludoSaludo" #zorroVideoSaludoSaludo src="./assets/saludo.mp4" muted playsinline
+                    (timeupdate)="checkTime('saludo')" autoplay (loadedmetadata)="iniciarDesde()"></video>
+                }
+
+
+                <h6 class="text-peque text-click"><-- Haz clic sobre mí, ¡tengo algo para mostrarte!</h6>
+            </div>
+
+
+            }
+
+        </div>
+
+
+
+        <div class="col-12 col-md-6 saludoText">
+
+            <svg id="burbuja1" viewBox="0 0 900 600" width="100%" height="500px" xmlns="http://www.w3.org/2000/svg"
+                xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1">
+                <rect x="0" y="0" width="900" height="600" fill="#eee6d400"></rect>
+                <g transform="translate(446.5131685507796 295.36966524026667)">
+                    <path
+                        d="M135.2 -126.6C172.4 -98.1 197.7 -49 193.1 -4.6C188.4 39.8 153.9 79.6 116.7 113.2C79.6 146.9 39.8 174.4 -0.3 174.7C-40.3 175 -80.6 147.9 -115.3 114.3C-149.9 80.6 -179 40.3 -185.3 -6.4C-191.7 -53 -175.4 -106.1 -140.7 -134.6C-106.1 -163.1 -53 -167 -2 -165C49 -163 98.1 -155.1 135.2 -126.6"
+                        fill="#615d5482"></path>
+                </g>
+            </svg>
+
+            <svg id="burbuja2" viewBox="0 0 900 600" width="100%" height="70px" xmlns="http://www.w3.org/2000/svg"
+                xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1">
+                <rect x="0" y="0" width="900" height="600" fill="#eee6d400"></rect>
+                <g transform="translate(451.0933133585956 305.87029003106295)">
+                    <path
+                        d="M67.5 -93C86.9 -78.9 101.5 -58.3 112.9 -34.1C124.3 -9.9 132.5 17.9 125 40.5C117.5 63.1 94.3 80.5 70.9 91.6C47.4 102.8 23.7 107.6 -0.1 107.8C-23.9 107.9 -47.8 103.3 -71.6 92.3C-95.4 81.3 -119 63.8 -126.9 40.9C-134.7 18 -126.8 -10.3 -117.5 -38C-108.3 -65.7 -97.6 -92.7 -77.8 -106.6C-58 -120.5 -29 -121.2 -2.4 -117.9C24.1 -114.5 48.2 -107 67.5 -93"
+                        fill="#615d5482"></path>
+                </g>
+            </svg>
+
+            <svg id="burbuja3" viewBox="0 0 900 600" width="100%" height="100px" xmlns="http://www.w3.org/2000/svg"
+                xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1">
+                <rect x="0" y="0" width="900" height="600" fill="#eee6d400"></rect>
+                <g transform="translate(475.4074078423292 297.1154715212935)">
+                    <path
+                        d="M58.1 -86.2C70 -71.4 70.7 -47.3 72.8 -26.9C74.8 -6.6 78.3 10 75.3 26.1C72.4 42.3 62.9 57.9 49.3 70.5C35.7 83.1 17.8 92.5 -5.8 100.5C-29.4 108.5 -58.8 114.9 -82.1 105.5C-105.4 96 -122.6 70.7 -126.4 44.5C-130.3 18.2 -120.8 -9 -107 -29.6C-93.2 -50.3 -75.1 -64.4 -56.6 -77C-38 -89.6 -19 -100.8 2.1 -103.7C23.1 -106.5 46.2 -101 58.1 -86.2"
+                        fill="#615d5482"></path>
+                </g>
+            </svg>
+
+            <svg id="burbuja4" viewBox="0 0 900 600" width="100%" height="50px" xmlns="http://www.w3.org/2000/svg"
+                xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1">
+                <rect x="0" y="0" width="900" height="600" fill="#eee6d400"></rect>
+                <g transform="translate(445.3822878784307 294.4744456389198)">
+                    <path
+                        d="M65.4 -85.7C88.8 -73 114.8 -59.3 119.9 -39.9C124.9 -20.4 109.1 4.9 95.8 26.6C82.5 48.2 71.8 66.2 56.3 86.1C40.8 106.1 20.4 128 2.8 124.1C-14.7 120.2 -29.4 90.5 -49.5 72C-69.7 53.5 -95.2 46.4 -105.6 30.5C-116 14.6 -111.3 -10 -103.6 -33.7C-95.9 -57.3 -85.3 -80 -67.5 -94.6C-49.8 -109.2 -24.9 -115.6 -2 -112.9C21 -110.2 41.9 -98.4 65.4 -85.7"
+                        fill="#615d5482"></path>
+                </g>
+            </svg>
+
+            <h4 class="text-titulos">Estas en mi portafolio</h4>
+            <h5 class="text-medium">¿ Quieres saber mas cosas sobre mi ?</h5>
+
+            <h6 class="text-peque">sigue bajando</h6>
+
+        </div>
+    </div>
+
+    <div class="row conocimientos" [ngClass]="{ 'conocimientosModoOscuro': modoOscuro == true }">
+        <div class="col-12">
+
+            <h2 class="text-titulos text-center mt-5 text-light">MIS CONOCIMIENTOS</h2>
+
+            <div class="row p-5">
+                @for (item of conocimientosArray; track $index) {
+                <div class="col-12 col-md-3 p-4 ps-3 pe-3">
+                    @if (item.nombre == '') {
+                    <div #card class="cardFalsa">
+
+                    </div>
+                    }@else {
+                    <div #card class="card-wrapper">
+                        <div class="card-flip">
+                            <div class="card-inner">
+                                <div class="card-front">
+                                    <img [ngClass]="{ 'invertirColor': $index === 12 }" [src]="item.imagen"
+                                        alt="{{ item.nombre }}" class="img-fluid p-4" />
+                                </div>
+                                <div class="card-back">
+                                    <div class="p-3 text-center">
+                                        <h5>{{ item.nombre }}</h5>
+                                        <p>{{ item.descripcion }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    }
+
+                </div>
+                }
+            </div>
+
+
+        </div>
+        <div class="col-7">
+
+        </div>
+        <div class="col-5">
+
+
+            <div id="contenedorVideoConocimientos" (click)="reproducir('conocimientos')"
+                class="zorro-wrapper animate__animated animate__bounceInRight">
+                @if (zorroVideoConocimientos){
+              
+                <video id="zorroVideoConocimientos" #zorroVideoConocimientos
+                    [src]="videoSrcConocimientos()" muted playsinline autoplay
+                    (timeupdate)="checkTime('conocimientos')"></video>
+               
+            
+                }
+            </div>
+
+
+        </div>
+
+    </div>
+
+    <div class="row proyectos" #proyectosContainer>
+
+        <div id="scrollContainer" [ngClass]="{ 'dark-theme': modoOscuro == true }" class="col-12" #scrollContainer>
+            <img id="scrollImage" #scrollImage [src]="framePath(0)" />
+        </div>
+
+    </div>
+
+
+    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+
+
+</div>
