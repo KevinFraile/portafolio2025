@@ -9,12 +9,12 @@
 .zorro-wrapper {
   padding: 60px;
   position: relative;
-  
+
 }
 
 .zorro-wrapper video {
 
-  
+
   width: 100%;
   cursor: pointer;
   border-radius: 300px;
@@ -22,11 +22,11 @@
 
 }
 
-#zorroVideoSaludoSaludo{
-   width: 100%;
+#zorroVideoSaludoSaludo {
+  width: 100%;
   cursor: pointer;
-  
- border-radius: 10% 30% 30% 40% /10% 40% 40% 70% ;
+
+  border-radius: 10% 30% 30% 40% /10% 40% 40% 70%;
 }
 
 .text-click {
@@ -105,18 +105,18 @@
   padding-left: 9vw;
   padding-right: 9vw;
   overflow-x: hidden;
-  
+
 }
 
 .conocimientos div {
   position: relative;
-  
+
 }
 
 #zorroVideoConocimientos {
 
   position: absolute;
-   bottom: 950%;
+  bottom: 950%;
   left: 15vw;
   transform: rotate(-18deg);
   /* rota 45 grados */
@@ -184,12 +184,12 @@
 
 }
 
-.cardFalsa{
+.cardFalsa {
   width: 100%;
   height: 400px;
 }
 
-.invertirColor{
+.invertirColor {
 
   filter: invert(1);
   clip-path: inset(0px 0% 40% 0%);
@@ -204,7 +204,7 @@
 .proyectos {
   background-color: #f2ecde;
   width: 100vw;
-  
+
 }
 
 
@@ -226,7 +226,7 @@
   position: sticky;
   top: 150px;
   z-index: 110;
-clip-path: inset(0px 25vw 0px 25vw);
+  clip-path: inset(0px 25vw 0px 25vw);
 
   /* top right bottom left */
   display: block;
@@ -240,51 +240,52 @@ clip-path: inset(0px 25vw 0px 25vw);
 
 @media (max-width: 766px) {
 
-  .text-click{
+  .text-click {
     padding: 100px;
     padding-top: 10px;
   }
+
   #burbuja1 {
-  width: 23vw;
-  position: absolute;
-  right: 3%;
-  top: 60%;
-  z-index: -1;
-  animation: float 3s ease-in-out infinite;
+    width: 23vw;
+    position: absolute;
+    right: 3%;
+    top: 60%;
+    z-index: -1;
+    animation: float 3s ease-in-out infinite;
 
-}
+  }
 
-#burbuja2 {
-  width: 2vw;
-  position: absolute;
-  right: 25%;
-  top: 75%;
-  z-index: -1;
-  animation: float 2.8s ease-in-out infinite;
+  #burbuja2 {
+    width: 2vw;
+    position: absolute;
+    right: 25%;
+    top: 75%;
+    z-index: -1;
+    animation: float 2.8s ease-in-out infinite;
 
-}
+  }
 
-#burbuja3 {
-  width: 3vw;
-  position: absolute;
-  right: 21%;
-  top: 78%;
-  z-index: -1;
-  animation: float 2.5s ease-in-out infinite;
-
-
-}
-
-#burbuja4 {
-  width: 2vw;
-  position: absolute;
-  right: 25%;
-  top: 85%;
-  z-index: -1;
-  animation: float 2.3s ease-in-out infinite;
+  #burbuja3 {
+    width: 3vw;
+    position: absolute;
+    right: 21%;
+    top: 78%;
+    z-index: -1;
+    animation: float 2.5s ease-in-out infinite;
 
 
-}
+  }
+
+  #burbuja4 {
+    width: 2vw;
+    position: absolute;
+    right: 25%;
+    top: 85%;
+    z-index: -1;
+    animation: float 2.3s ease-in-out infinite;
+
+
+  }
 
   .saludoText {
     text-align: center;
@@ -300,7 +301,25 @@ clip-path: inset(0px 25vw 0px 25vw);
     min-width: 97vw;
   }
 
-  #scrollImage{
+  #scrollImage {
     clip-path: inset(0px 14vw 0px 14vw);
   }
+
+}
+
+.modelo3d {
+  background-color: #ffaa5e !important;
+  position: relative;
+  overflow: hidden;
+
+}
+
+.blur-layer {
+  position: absolute;
+  inset: 0;
+  backdrop-filter: blur(20px);
+  background: rgba(255, 255, 255, 0.2);
+  z-index: 2;
+  pointer-events: none;
+  transition: backdrop-filter 1.4s ease, background 1s ease;
 }

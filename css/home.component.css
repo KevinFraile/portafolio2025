@@ -1,0 +1,319 @@
+@charset "UTF-8";
+.presentacion {
+  width: 100vw;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  height: 100vh;
+  overflow-x: hidden;
+}
+
+.zorro-wrapper {
+  padding: 60px;
+  position: relative;
+}
+
+.zorro-wrapper video {
+  width: 100%;
+  cursor: pointer;
+  border-radius: 300px;
+}
+
+#zorroVideoSaludoSaludo {
+  width: 100%;
+  cursor: pointer;
+  border-radius: 10% 30% 30% 40% /10% 40% 40% 70%;
+}
+
+.text-click {
+  position: absolute;
+  right: 0;
+}
+
+#burbuja1 {
+  width: 23vw;
+  position: absolute;
+  right: 3%;
+  top: 6%;
+  z-index: -1;
+  -webkit-animation: float 3s ease-in-out infinite;
+          animation: float 3s ease-in-out infinite;
+}
+
+#burbuja2 {
+  width: 2vw;
+  position: absolute;
+  right: 25%;
+  top: 25%;
+  z-index: -1;
+  -webkit-animation: float 2.8s ease-in-out infinite;
+          animation: float 2.8s ease-in-out infinite;
+}
+
+#burbuja3 {
+  width: 3vw;
+  position: absolute;
+  right: 21%;
+  top: 28%;
+  z-index: -1;
+  -webkit-animation: float 2.5s ease-in-out infinite;
+          animation: float 2.5s ease-in-out infinite;
+}
+
+#burbuja4 {
+  width: 2vw;
+  position: absolute;
+  right: 25%;
+  top: 35%;
+  z-index: -1;
+  -webkit-animation: float 2.3s ease-in-out infinite;
+          animation: float 2.3s ease-in-out infinite;
+}
+
+@-webkit-keyframes float {
+  0% {
+    -webkit-transform: translate(0px, 0px);
+            transform: translate(0px, 0px);
+  }
+  50% {
+    -webkit-transform: translate(6px, -15px);
+            transform: translate(6px, -15px);
+  }
+  100% {
+    -webkit-transform: translate(0px, 0px);
+            transform: translate(0px, 0px);
+  }
+}
+
+@keyframes float {
+  0% {
+    -webkit-transform: translate(0px, 0px);
+            transform: translate(0px, 0px);
+  }
+  50% {
+    -webkit-transform: translate(6px, -15px);
+            transform: translate(6px, -15px);
+  }
+  100% {
+    -webkit-transform: translate(0px, 0px);
+            transform: translate(0px, 0px);
+  }
+}
+
+.conocimientos {
+  width: 100vw;
+  background-color: #2a2926;
+  padding-left: 9vw;
+  padding-right: 9vw;
+  overflow-x: hidden;
+}
+
+.conocimientos div {
+  position: relative;
+}
+
+#zorroVideoConocimientos {
+  position: absolute;
+  bottom: 950%;
+  left: 15vw;
+  -webkit-transform: rotate(-18deg);
+          transform: rotate(-18deg);
+  /* rota 45 grados */
+  min-width: 42vw;
+}
+
+.card-wrapper {
+  -webkit-perspective: 1000px;
+          perspective: 1000px;
+}
+
+.card-flip {
+  width: 100%;
+  height: 400px;
+}
+
+.card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  -webkit-transition: -webkit-transform 0.8s;
+  transition: -webkit-transform 0.8s;
+  transition: transform 0.8s;
+  transition: transform 0.8s, -webkit-transform 0.8s;
+  -webkit-transform-style: preserve-3d;
+          transform-style: preserve-3d;
+}
+
+.card-wrapper:hover .card-inner {
+  -webkit-transform: rotateY(180deg);
+          transform: rotateY(180deg);
+}
+
+.card-front,
+.card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  -webkit-backface-visibility: hidden;
+          backface-visibility: hidden;
+  border-radius: 16px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  /* Glassmorphism base */
+  background-color: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px) saturate(180%);
+  -webkit-backdrop-filter: blur(10px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  -webkit-box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+          box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+}
+
+.card-back {
+  -webkit-transform: rotateY(180deg);
+          transform: rotateY(180deg);
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  text-align: center;
+  padding: 1rem;
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.3);
+  /* más opaco para mejor contraste */
+  margin-top: -400px;
+}
+
+.card-front img {
+  padding: 50px !important;
+  width: 100%;
+}
+
+.cardFalsa {
+  width: 100%;
+  height: 400px;
+}
+
+.invertirColor {
+  -webkit-filter: invert(1);
+          filter: invert(1);
+  -webkit-clip-path: inset(0px 0% 40% 0%);
+          clip-path: inset(0px 0% 40% 0%);
+  /* top right bottom left */
+}
+
+.proyectos {
+  background-color: #f2ecde;
+  width: 100vw;
+}
+
+#scrollContainer {
+  height: 330vh;
+  padding-top: 230px;
+  padding-bottom: 230px;
+}
+
+#scrollImage {
+  height: 70vh;
+  width: 100vw;
+  -o-object-fit: contain;
+     object-fit: contain;
+  position: -webkit-sticky;
+  position: sticky;
+  top: 150px;
+  z-index: 110;
+  -webkit-clip-path: inset(0px 25vw 0px 25vw);
+          clip-path: inset(0px 25vw 0px 25vw);
+  /* top right bottom left */
+  display: block;
+  margin: 0 auto;
+}
+
+@media (max-width: 766px) {
+  .text-click {
+    padding: 100px;
+    padding-top: 10px;
+  }
+  #burbuja1 {
+    width: 23vw;
+    position: absolute;
+    right: 3%;
+    top: 60%;
+    z-index: -1;
+    -webkit-animation: float 3s ease-in-out infinite;
+            animation: float 3s ease-in-out infinite;
+  }
+  #burbuja2 {
+    width: 2vw;
+    position: absolute;
+    right: 25%;
+    top: 75%;
+    z-index: -1;
+    -webkit-animation: float 2.8s ease-in-out infinite;
+            animation: float 2.8s ease-in-out infinite;
+  }
+  #burbuja3 {
+    width: 3vw;
+    position: absolute;
+    right: 21%;
+    top: 78%;
+    z-index: -1;
+    -webkit-animation: float 2.5s ease-in-out infinite;
+            animation: float 2.5s ease-in-out infinite;
+  }
+  #burbuja4 {
+    width: 2vw;
+    position: absolute;
+    right: 25%;
+    top: 85%;
+    z-index: -1;
+    -webkit-animation: float 2.3s ease-in-out infinite;
+            animation: float 2.3s ease-in-out infinite;
+  }
+  .saludoText {
+    text-align: center;
+  }
+  #zorroVideoConocimientos {
+    position: absolute;
+    bottom: 2110%;
+    left: -20vw;
+    -webkit-transform: rotate(-18deg);
+            transform: rotate(-18deg);
+    /* rota 45 grados */
+    min-width: 97vw;
+  }
+  #scrollImage {
+    -webkit-clip-path: inset(0px 14vw 0px 14vw);
+            clip-path: inset(0px 14vw 0px 14vw);
+  }
+}
+
+.modelo3d {
+  background-color: #ffaa5e !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.blur-layer {
+  position: absolute;
+  inset: 0;
+  -webkit-backdrop-filter: blur(20px);
+          backdrop-filter: blur(20px);
+  background: rgba(255, 255, 255, 0.2);
+  z-index: 2;
+  pointer-events: none;
+  -webkit-transition: background 1s ease, -webkit-backdrop-filter 1.4s ease;
+  transition: background 1s ease, -webkit-backdrop-filter 1.4s ease;
+  transition: backdrop-filter 1.4s ease, background 1s ease;
+  transition: backdrop-filter 1.4s ease, background 1s ease, -webkit-backdrop-filter 1.4s ease;
+}
+/*# sourceMappingURL=home.component.css.map */

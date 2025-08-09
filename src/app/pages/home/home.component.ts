@@ -2,13 +2,15 @@ import { NgClass } from '@angular/common';
 import { Component, AfterViewInit, ViewChild, ElementRef, HostListener, QueryList, ViewChildren, Input } from '@angular/core';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { ZorroBlancoExplicando3DComponent } from "../../three-model/zorro-blanco-explicando3-d/zorro-blanco-explicando3-d.component";
+import CSSRulePlugin from 'gsap/CSSRulePlugin';
 
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger, CSSRulePlugin);
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [NgClass],
+  imports: [NgClass, ZorroBlancoExplicando3DComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
@@ -97,15 +99,35 @@ export class HomeComponent implements AfterViewInit {
 
   @ViewChild('zorroVideoSaludoSaludo') zorroVideoSaludo!: ElementRef<HTMLVideoElement>;
   @ViewChild('zorroVideoConocimientos', { static: true }) zorroVideoConocimiento!: ElementRef<HTMLVideoElement>;
-
+  @ViewChild('modelo3d', { static: true }) modelo3d!: ElementRef;
 
 
   ngAfterViewInit(): void {
     this.preloadFrames();
     this.setupVideoObserver();
     this.inicializarVideoScroll()
-    this.animacionCard()
+    this.animacionCard();
+
+
+
+    gsap.fromTo(
+      '.blur-layer',
+      { backdropFilter: 'blur(20px)', background: 'rgba(255,255,255,0.2)' },
+      {
+        backdropFilter: 'blur(0px)',
+        background: 'rgba(255,255,255,0)',
+        scrollTrigger: {
+          trigger: '.modelo3d',
+          start: 'top 8%',
+          end: 'top 30%',
+          scrub: true,
+          markers: true,
+          onUpdate: (self) => console.log(`Progreso: ${(self.progress * 100).toFixed(1)}%`)
+        }
+      }
+    );
   }
+
 
   preloadedFramesClaro: HTMLImageElement[] = [];
   preloadedFramesOscuro: HTMLImageElement[] = [];
@@ -232,16 +254,17 @@ export class HomeComponent implements AfterViewInit {
         trigger: container,
         start: 'top top',
         end: 'bottom bottom',
-        scrub: 0.5
+        scrub: 0.5,
+        markers: true,
       },
       onUpdate: () => {
-  const currentFrame = Math.floor(obj.frame);
-  const images = this.modoOscuro ? this.preloadedFramesOscuro : this.preloadedFramesClaro;
-  const preloaded = images[currentFrame];
-  if (preloaded?.src) {
-    image.src = preloaded.src;
-  }
-}
+        const currentFrame = Math.floor(obj.frame);
+        const images = this.modoOscuro ? this.preloadedFramesOscuro : this.preloadedFramesClaro;
+        const preloaded = images[currentFrame];
+        if (preloaded?.src) {
+          image.src = preloaded.src;
+        }
+      }
     });
   }
 
@@ -283,12 +306,15 @@ export class HomeComponent implements AfterViewInit {
             start: 'top 80%',
             end: 'bottom 10%',
             toggleActions: 'play reverse play reverse',
+            markers: true,
           }
         }
       );
     });
 
   }
+
+
 
 }
 

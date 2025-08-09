@@ -1,0 +1,9 @@
+{
+    "version": 3,
+    "mappings": "AAAA,AAAA,iBAAiB,CAAC;EACZ,KAAK,EAAE,IAAI;EACX,MAAM,EAAE,KAAK;EACb,QAAQ,EAAE,MAAM;CACjB",
+    "sources": [
+        "../src/app/three-model/zorro-blanco-explicando3-d/zorro-blanco-explicando3-d.component.scss"
+    ],
+    "names": [],
+    "file": "zorro-blanco-explicando3-d.component.css"
+}

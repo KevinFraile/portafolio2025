@@ -1,0 +1,50 @@
+#videoModoOscuro {
+  -webkit-transform: scale(0.7) !important;
+          transform: scale(0.7) !important;
+  height: 90vh;
+  width: 100vw;
+  -o-object-fit: cover;
+     object-fit: cover;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+  z-index: 2100;
+  -webkit-clip-path: inset(0px 0vw 0px 0vw);
+          clip-path: inset(0px 0vw 0px 0vw);
+  pointer-events: none;
+  /* para que no interfiera con clicks */
+}
+
+.contVideoOscuro {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+  background-color: black;
+  height: 100vh;
+  width: 100vw;
+  z-index: 1100;
+}
+
+.contVideoClaro {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+  background-color: #e1dac0;
+  height: 100vh;
+  width: 100vw;
+  z-index: 1100;
+}
+
+app-home {
+  width: 100px;
+}
+/*# sourceMappingURL=app.component.css.map */
