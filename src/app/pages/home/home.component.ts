@@ -5,6 +5,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ZorroBlancoExplicando3DComponent } from "../../three-model/zorro-blanco-explicando3-d/zorro-blanco-explicando3-d.component";
 import CSSRulePlugin from 'gsap/CSSRulePlugin';
 
+
 gsap.registerPlugin(ScrollTrigger, CSSRulePlugin);
 
 @Component({
@@ -102,6 +103,8 @@ export class HomeComponent implements AfterViewInit {
   @ViewChild('modelo3d', { static: true }) modelo3d!: ElementRef;
 
 
+  constructor(){}
+
   ngAfterViewInit(): void {
     this.preloadFrames();
     this.setupVideoObserver();
@@ -112,7 +115,7 @@ export class HomeComponent implements AfterViewInit {
 
     gsap.fromTo(
       '.blur-layer',
-      { backdropFilter: 'blur(20px)', background: 'rgba(255,255,255,0.2)' },
+      { backdropFilter: 'blur(20px)', background: 'rgba(0, 0, 0, 0.2)' },
       {
         backdropFilter: 'blur(0px)',
         background: 'rgba(255,255,255,0)',

@@ -1,4 +1,5 @@
-import { Component, ElementRef, OnInit, OnDestroy, ViewChild, input, Input } from '@angular/core';
+import { Component, ElementRef, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Subscription } from 'rxjs';
 
 // @ts-ignore
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
@@ -7,6 +8,7 @@ import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js';
 // @ts-ignore
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 import * as THREE from 'three';
+import { Render3DService } from '../../service/render3-d.service';
 
 @Component({
   selector: 'app-zorro-blanco-explicando3-d',
@@ -15,194 +17,261 @@ import * as THREE from 'three';
   templateUrl: './zorro-blanco-explicando3-d.component.html',
   styleUrl: './zorro-blanco-explicando3-d.component.scss'
 })
-export class ZorroBlancoExplicando3DComponent implements OnInit {
+export class ZorroBlancoExplicando3DComponent implements OnInit, OnDestroy {
 
-  @Input() modoOscuro: boolean = true;
-
+  // Obtiene el contenedor del canvas del DOM para poder inyectar el renderizador de Three.js
   @ViewChild('canvasContainer', { static: true }) canvasContainer!: ElementRef<HTMLDivElement>;
 
+  // Variables privadas para los elementos de Three.js
   private scene!: THREE.Scene;
   private camera!: THREE.PerspectiveCamera;
   private renderer!: THREE.WebGLRenderer;
   private controls!: OrbitControls;
   private animationId!: number;
   private model!: THREE.Object3D;
+  private modoOscuroSubscription!: Subscription;
 
-
-  // Variables para que gire sin darle clik siga el cursor
+  // Variables para controlar la rotación del modelo con el mouse
   private targetRotationX = 0;
   private targetRotationY = 0;
-
   private lastMouseMoveTime = 0;
 
+  constructor(public render3DService: Render3DService) {}
 
+  // Este método se ejecuta cuando el componente se inicializa
   ngOnInit() {
-    this.initThree();
-    this.loadModel();
+    // Nos suscribimos al servicio para estar atentos a los cambios en 'modoOscuroRender3D'.
+    // Esto es el corazón de la actualización dinámica. La primera vez que se suscribe,
+    // se ejecuta con el valor inicial, construyendo la escena.
+    this.modoOscuroSubscription = this.render3DService.modoOscuroRender3D$.subscribe(
+      isModoOscuro => {
+        this.refresh3DScene(isModoOscuro);
+      }
+    );
+    // Inicializa el control del mouse para la rotación del modelo.
     this.initMouseControl();
-    this.animate();
-
   }
 
+  // Este método se ejecuta justo antes de que el componente sea destruido
+  ngOnDestroy() {
+    // Es crucial desuscribirse para evitar fugas de memoria.
+    if (this.modoOscuroSubscription) {
+      this.modoOscuroSubscription.unsubscribe();
+    }
+    // Detiene la animación de Three.js para que el `requestAnimationFrame` no se ejecute infinitamente.
+    if (this.animationId) {
+      cancelAnimationFrame(this.animationId);
+    }
+    // Llama a la función de limpieza para liberar los recursos de la GPU.
+    this.disposeScene();
+    // Libera el renderizador y elimina el elemento canvas del DOM.
+    if (this.renderer) {
+      this.renderer.dispose();
+      this.canvasContainer.nativeElement.removeChild(this.renderer.domElement);
+    }
+  }
 
+  // ---
 
-  private initThree() {
-    // Escena: donde estarán todos los objetos, luces y cámara
+  /**
+   * Refresca completamente la escena 3D en función del modo oscuro.
+   * Este método se llama en cada cambio del tema.
+   * @param isModoOscuro indica si la escena debe ser oscura o clara.
+   */
+  private refresh3DScene(isModoOscuro: boolean) {
+    // 1. Limpiamos la escena anterior para no superponer objetos.
+    this.disposeScene();
+
+    // 2. Si el renderizador ya existe, eliminamos su canvas para que no queden dos.
+    if (this.renderer) {
+      this.canvasContainer.nativeElement.removeChild(this.renderer.domElement);
+    }
+
+    // 3. Volvemos a inicializar toda la escena con las nuevas configuraciones.
+    this.initThree(isModoOscuro);
+    this.loadModel(isModoOscuro);
+
+    // 4. Aseguramos que la animación se inicie solo una vez, en la primera carga.
+    if (!this.animationId) {
+      this.animate();
+    }
+  }
+
+  // ---
+
+  /**
+   * Libera todos los recursos de la GPU (geometrías, materiales, texturas).
+   * Esto es vital para evitar fugas de memoria.
+   */
+  private disposeScene() {
+    if (this.scene) {
+      // Recorremos cada objeto de la escena.
+      this.scene.traverse((object: any) => {
+        // Si el objeto tiene una geometría, la liberamos.
+        if (object.isMesh && object.geometry) {
+          object.geometry.dispose();
+        }
+
+        // Si el objeto tiene un material, lo liberamos.
+        if (object.isMesh && object.material) {
+          if (object.material.isMaterial) {
+            this.disposeMaterial(object.material);
+          } else if (Array.isArray(object.material)) {
+            for (const material of object.material) {
+              this.disposeMaterial(material);
+            }
+          }
+        }
+      });
+
+      // Liberamos la textura del fondo si existe.
+      if (this.scene.background && (this.scene.background as any).dispose) {
+        (this.scene.background as any).dispose();
+      }
+
+      // Eliminamos todos los objetos de la escena.
+      while (this.scene.children.length > 0) {
+        const child = this.scene.children[0];
+        this.scene.remove(child);
+      }
+    }
+  }
+
+  // ---
+
+  /**
+   * Libera un material y todas sus texturas asociadas.
+   * @param material El material a liberar.
+   */
+  private disposeMaterial(material: THREE.Material) {
+    for (const key of Object.keys(material)) {
+      const value = (material as any)[key];
+      // Si la propiedad es una textura, la liberamos.
+      if (value && typeof value === 'object' && 'isTexture' in value) {
+        value.dispose();
+      }
+    }
+    // Finalmente, liberamos el material en sí.
+    material.dispose();
+  }
+
+  // ---
+
+  /**
+   * Configura la escena, la cámara, el renderizador, las luces y la "habitación".
+   * @param isModoOscuro Define si se usan los colores y texturas del modo oscuro o claro.
+   */
+  private initThree(isModoOscuro: boolean) {
     this.scene = new THREE.Scene();
-
-    // Cámara en perspectiva
     this.camera = new THREE.PerspectiveCamera(
-      75, // Campo de visión (FOV) en grados: cuanto más alto, más “abierta” la vista
-      this.canvasContainer.nativeElement.clientWidth / this.canvasContainer.nativeElement.clientHeight, // Relación de aspecto (ancho / alto)
-      0.1, // Plano cercano: todo lo más cerca de 0.1 unidades se recorta
-      1000 // Plano lejano: todo lo más lejos de 1000 unidades se recorta
+      75,
+      this.canvasContainer.nativeElement.clientWidth / this.canvasContainer.nativeElement.clientHeight,
+      0.1,
+      1000
     );
 
-    this.camera.position.set(0, 1, 2.4); // Posición de la cámara (X=0, Y=1, Z=3)
+    this.camera.position.set(0, 1, 2.4);
 
-    // Render con transparencia y suavizado de bordes
     this.renderer = new THREE.WebGLRenderer({
-      antialias: true, // Activa suavizado de bordes en líneas y objetos
-      alpha: true // Permite fondo transparente
+      antialias: true,
+      alpha: true
     });
     this.renderer.setSize(
-      this.canvasContainer.nativeElement.clientWidth, // Ancho igual al contenedor
-      this.canvasContainer.nativeElement.clientHeight // Alto igual al contenedor
+      this.canvasContainer.nativeElement.clientWidth,
+      this.canvasContainer.nativeElement.clientHeight
     );
-    
-    this.canvasContainer.nativeElement.appendChild(this.renderer.domElement); // Inserta el canvas de Three.js en el HTML
+
+    this.canvasContainer.nativeElement.appendChild(this.renderer.domElement);
 
     let intensidadLuz = 2.5;
-
-    if (this.modoOscuro == true) {
-      intensidadLuz = 0;
-    }
-    // Luz direccional principal (naranja cálido)
-    const warmLight1 = new THREE.DirectionalLight(0xffa500, intensidadLuz); // Color naranja y potencia 2.5
-    warmLight1.position.set(5, 10, 7); // Ubicación de la luz en el espacio
-    warmLight1.castShadow = true;
-    warmLight1.shadow.mapSize.width = 2048; // mayor resolución
-    warmLight1.shadow.mapSize.height = 2048;
-    warmLight1.shadow.bias = -0.0001; // evita artefactos
-    warmLight1.shadow.camera.left = -5;
-    warmLight1.shadow.camera.right = 5;
-    warmLight1.shadow.camera.top = 5;
-    warmLight1.shadow.camera.bottom = -5;
-    this.scene.add(warmLight1); // Agrega la luz a la escena
+    const warmLight1 = new THREE.DirectionalLight(0xffa500, intensidadLuz);
+    warmLight1.position.set(5, 10, 7);
+    this.scene.add(warmLight1);
 
     intensidadLuz = 4.9;
-
-    if (this.modoOscuro == true) {
-      intensidadLuz = 0.8;
-    }
-    // Luz direccional secundaria (más suave y dorada)
     const warmLight2 = new THREE.DirectionalLight(0xffe4b5, intensidadLuz);
-    warmLight2.position.set(-5, 8, -5); // Ubicación de la luz
-    warmLight2.castShadow = true;
-    warmLight2.shadow.mapSize.width = 2048; // mayor resolución
-    warmLight2.shadow.mapSize.height = 2048;
-    warmLight2.shadow.bias = -0.0001; // evita artefactos
-    warmLight2.shadow.camera.left = -5;
-    warmLight2.shadow.camera.right = 5;
-    warmLight2.shadow.camera.top = 5;
-    warmLight2.shadow.camera.bottom = -5;
-    this.scene.add(warmLight2); // Agrega la luz a la escena
+    warmLight2.position.set(-5, 8, -5);
+    this.scene.add(warmLight2);
 
     intensidadLuz = 1.1;
-
-    if (this.modoOscuro == true) {
-      intensidadLuz = 0.1;
-    }
-    // Luz ambiental (ilumina todo por igual, sin sombras)
-    const ambientLight = new THREE.AmbientLight(0xffe4b5, intensidadLuz); // Color cálido y baja intensidad
+    const ambientLight = new THREE.AmbientLight(0xffe4b5, intensidadLuz);
     this.scene.add(ambientLight);
 
-    // Loader de texturas
     const textureLoader = new THREE.TextureLoader();
-
     let wallTextures = [
-      textureLoader.load('assets/texturas/pared.jpg'), // Frente
-      textureLoader.load('assets/texturas/pared.jpg'), // Atrás
-      textureLoader.load('assets/texturas/pared3.png'), // Arriba
-      textureLoader.load('assets/texturas/pared4.png'), // Abajo
-      textureLoader.load('assets/texturas/pared.jpg'), // Izquierda
-      textureLoader.load('assets/texturas/pared2.png') // Derecha
+      textureLoader.load('assets/texturas/pared.jpg'),
+      textureLoader.load('assets/texturas/pared.jpg'),
+      textureLoader.load('assets/texturas/pared3.png'),
+      textureLoader.load('assets/texturas/pared4.png'),
+      textureLoader.load('assets/texturas/pared.jpg'),
+      textureLoader.load('assets/texturas/pared2.png')
     ];
 
-    if (this.modoOscuro == true) {
-     
-
-      // Luz blanca central como un foco
+    if (isModoOscuro) {
       const centerLight = new THREE.SpotLight(0xffffff, 50, 10, Math.PI / 8, 0.5, 2);
-      centerLight.position.set(0, 5, 0); // Posición elevada para que apunte hacia abajo
-      centerLight.target.position.set(0, 0, 0); // Apunta al centro de la escena
-     
+      centerLight.position.set(0, 5, 0);
+      centerLight.target.position.set(0, 0, 0);
       this.scene.add(centerLight);
-      this.scene.add(centerLight.target); // Es necesario agregar el target para que funcione correctamente
+      this.scene.add(centerLight.target);
 
-      // Ajustar las luces existentes para el modo oscuro
-      warmLight1.color.set(0x0a1530); // Tono azul oscuro
+      warmLight1.color.set(0x0a1530);
       warmLight1.intensity = 0.2;
-      warmLight2.color.set(0x0a1530); // Tono azul oscuro
-      warmLight2.intensity = 0.5;
-      ambientLight.color.set(0x0a1530); // Tono azul oscuro
-      ambientLight.intensity = 0.2;
+      warmLight2.color.set(0x0a1530);
+      warmLight2.intensity = 0.2;
+      ambientLight.color.set(0x0a1530);
+      ambientLight.intensity = 0.4;
 
-      // Cargar texturas para el modo oscuro
       wallTextures = [
-        textureLoader.load('assets/texturas/3.png'), // Frente
-        textureLoader.load('assets/texturas/2.png'), // Atrás
-        textureLoader.load('assets/texturas/cieloNocturno.jpg'), // Arriba
-        textureLoader.load('assets/texturas/piso.png'), // Abajo
-        textureLoader.load('assets/texturas/n.jpg'), // Izquierda
-        textureLoader.load('assets/texturas/atras.jpg') // Derecha
+        textureLoader.load('assets/texturas/3.png'),
+        textureLoader.load('assets/texturas/2.png'),
+        textureLoader.load('assets/texturas/cieloNocturno.jpg'),
+        textureLoader.load('assets/texturas/piso.png'),
+        textureLoader.load('assets/texturas/n.jpg'),
+        textureLoader.load('assets/texturas/atras.jpg')
       ];
+
+      this.scene.background = new THREE.Color(0x000000);
     }
 
-    // Configurar que cada textura se repita si quieres
     wallTextures.forEach(tex => {
       tex.wrapS = THREE.RepeatWrapping;
       tex.wrapT = THREE.RepeatWrapping;
       tex.repeat.set(1, 1);
     });
 
-    // Crear un material distinto para cada cara
     const wallMaterials = wallTextures.map(tex => new THREE.MeshStandardMaterial({
       map: tex,
-      side: THREE.BackSide // Interior visible
+      side: THREE.BackSide
     }));
 
-    // Crear la habitación
     const roomSize = 5;
     const roomGeometry = new THREE.BoxGeometry(roomSize, roomSize, roomSize);
     const room = new THREE.Mesh(roomGeometry, wallMaterials);
-
-    // Ajustar posición para que el piso quede alineado
     room.position.y = roomSize / 2 - 1;
-
     room.traverse((child: any) => {
       if (child.isMesh) {
         child.receiveShadow = true;
       }
     });
 
-    // Agregar a la escena
     this.scene.add(room);
-
-    // Controles para mover la cámara con el ratón
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-    this.controls.enableZoom = false; // Desactiva el zoom con scroll o pinza
+    this.controls.enableZoom = false;
   }
 
+  // ---
 
-
-  private loadModel() {
-
+  /**
+   * Carga el modelo 3D del zorro según el modo oscuro actual.
+   * @param isModoOscuro Define si se carga el modelo oscuro o claro.
+   */
+  private loadModel(isModoOscuro: boolean) {
     let pathPersonaje = 'assets/models/zorroModoClaro/'
 
-    if (this.modoOscuro == true) {
+    if (isModoOscuro) {
       pathPersonaje = 'assets/models/zorroModoOscuro/'
     }
+
     const mtlLoader = new MTLLoader();
     mtlLoader.setPath(pathPersonaje);
 
@@ -213,13 +282,12 @@ export class ZorroBlancoExplicando3DComponent implements OnInit {
       objLoader.setMaterials(materials);
       objLoader.setPath(pathPersonaje);
       objLoader.load('source.obj', (object: any) => {
-        this.model = object; // 🔹 Guardamos referencia para animarlo
+        this.model = object;
         object.position.set(0, 0, 0);
-        object.rotation.x = -Math.PI / 2; // Poner de pie
-        object.rotation.z = -Math.PI / 2; // mirar para alfrente
+        object.rotation.x = -Math.PI / 2;
+        object.rotation.z = -Math.PI / 2;
         object.scale.set(2, 2, 2);
 
-        // ✅ Activar sombras en el modelo
         object.traverse((child: any) => {
           if (child.isMesh) {
             child.castShadow = true;
@@ -227,42 +295,45 @@ export class ZorroBlancoExplicando3DComponent implements OnInit {
           }
         });
 
-
-
         this.scene.add(object);
       });
     });
   }
 
+  // ---
 
+  /**
+   * Bucle de animación principal. Se llama en cada frame para actualizar la escena.
+   */
   private animate = () => {
+    // Solicita al navegador que vuelva a llamar a este método en el siguiente frame.
     this.animationId = requestAnimationFrame(this.animate);
-
-
-    const time = Date.now() * 0.002; // Tiempo en segundos (escalado)
+    const time = Date.now() * 0.002;
 
     if (this.model) {
-      // Respiración: variación sutil en la escala Y
+      // Efecto de "respiración" moviendo la escala Y del modelo.
       const scaleY = 2 + Math.sin(time) * 0.01;
       this.model.scale.set(2, scaleY, 2);
 
-
       const timeSinceMouseMove = Date.now() - this.lastMouseMoveTime;
 
+      // Si el mouse se ha movido recientemente, rotamos el modelo para que siga al cursor.
       if (timeSinceMouseMove < 2000) {
-        this.model.rotation.x = -Math.PI / 2; // Poner de pie
-        this.model.rotation.z = -Math.PI / 2; // mirar para alfrente
-        // Rotación suave hacia el mouse
+        this.model.rotation.x = -Math.PI / 2;
+        this.model.rotation.z = -Math.PI / 2;
         this.model.rotation.z += (this.targetRotationY - this.model.rotation.z) * 0.12;
         this.model.rotation.x += (this.targetRotationX - this.model.rotation.x) * 0.04;
       }
-
     }
-
     this.controls.update();
     this.renderer.render(this.scene, this.camera);
   };
 
+  // ---
+
+  /**
+   * Configura los listeners del mouse para rotar el modelo.
+   */
   private initMouseControl() {
     window.addEventListener('mousemove', (event) => {
       const x = (event.clientX / window.innerWidth) * 2 - 1;
@@ -272,7 +343,4 @@ export class ZorroBlancoExplicando3DComponent implements OnInit {
       this.lastMouseMoveTime = Date.now();
     });
   }
-
-
 }
-
