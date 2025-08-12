@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, OnDestroy, ViewChild, input, Input } from '@angular/core';
 
 // @ts-ignore
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
@@ -16,6 +16,8 @@ import * as THREE from 'three';
   styleUrl: './zorro-blanco-explicando3-d.component.scss'
 })
 export class ZorroBlancoExplicando3DComponent implements OnInit {
+
+  @Input() modoOscuro: boolean = true;
 
   @ViewChild('canvasContainer', { static: true }) canvasContainer!: ElementRef<HTMLDivElement>;
 
@@ -43,6 +45,7 @@ export class ZorroBlancoExplicando3DComponent implements OnInit {
   }
 
 
+
   private initThree() {
     // Escena: donde estarán todos los objetos, luces y cámara
     this.scene = new THREE.Scene();
@@ -57,55 +60,104 @@ export class ZorroBlancoExplicando3DComponent implements OnInit {
 
     this.camera.position.set(0, 1, 2.4); // Posición de la cámara (X=0, Y=1, Z=3)
 
-
     // Render con transparencia y suavizado de bordes
     this.renderer = new THREE.WebGLRenderer({
       antialias: true, // Activa suavizado de bordes en líneas y objetos
-      alpha: true      // Permite fondo transparente
+      alpha: true // Permite fondo transparente
     });
     this.renderer.setSize(
       this.canvasContainer.nativeElement.clientWidth, // Ancho igual al contenedor
       this.canvasContainer.nativeElement.clientHeight // Alto igual al contenedor
     );
-    this.renderer.shadowMap.enabled = true; // Activa el cálculo de sombras
-    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap; // Sombras más suaves y difusas
+    
     this.canvasContainer.nativeElement.appendChild(this.renderer.domElement); // Inserta el canvas de Three.js en el HTML
 
+    let intensidadLuz = 2.5;
+
+    if (this.modoOscuro == true) {
+      intensidadLuz = 0;
+    }
     // Luz direccional principal (naranja cálido)
-    const warmLight1 = new THREE.DirectionalLight(0xffa500, 2.5); // Color naranja y potencia 2.5
+    const warmLight1 = new THREE.DirectionalLight(0xffa500, intensidadLuz); // Color naranja y potencia 2.5
     warmLight1.position.set(5, 10, 7); // Ubicación de la luz en el espacio
     warmLight1.castShadow = true;
-    warmLight1.shadow.mapSize.width = 2048;  // mayor resolución
+    warmLight1.shadow.mapSize.width = 2048; // mayor resolución
     warmLight1.shadow.mapSize.height = 2048;
     warmLight1.shadow.bias = -0.0001; // evita artefactos
     warmLight1.shadow.camera.left = -5;
     warmLight1.shadow.camera.right = 5;
     warmLight1.shadow.camera.top = 5;
     warmLight1.shadow.camera.bottom = -5;
-
     this.scene.add(warmLight1); // Agrega la luz a la escena
 
+    intensidadLuz = 4.9;
+
+    if (this.modoOscuro == true) {
+      intensidadLuz = 0.8;
+    }
     // Luz direccional secundaria (más suave y dorada)
-    const warmLight2 = new THREE.DirectionalLight(0xffe4b5, 4.9); 
+    const warmLight2 = new THREE.DirectionalLight(0xffe4b5, intensidadLuz);
     warmLight2.position.set(-5, 8, -5); // Ubicación de la luz
+    warmLight2.castShadow = true;
+    warmLight2.shadow.mapSize.width = 2048; // mayor resolución
+    warmLight2.shadow.mapSize.height = 2048;
+    warmLight2.shadow.bias = -0.0001; // evita artefactos
+    warmLight2.shadow.camera.left = -5;
+    warmLight2.shadow.camera.right = 5;
+    warmLight2.shadow.camera.top = 5;
+    warmLight2.shadow.camera.bottom = -5;
     this.scene.add(warmLight2); // Agrega la luz a la escena
 
+    intensidadLuz = 1.1;
+
+    if (this.modoOscuro == true) {
+      intensidadLuz = 0.1;
+    }
     // Luz ambiental (ilumina todo por igual, sin sombras)
-    const ambientLight = new THREE.AmbientLight(0xffe4b5, 1.1); // Color cálido y baja intensidad
+    const ambientLight = new THREE.AmbientLight(0xffe4b5, intensidadLuz); // Color cálido y baja intensidad
     this.scene.add(ambientLight);
 
     // Loader de texturas
     const textureLoader = new THREE.TextureLoader();
 
-    // Cargar una textura diferente para cada pared
-    const wallTextures = [
+    let wallTextures = [
       textureLoader.load('assets/texturas/pared.jpg'), // Frente
       textureLoader.load('assets/texturas/pared.jpg'), // Atrás
       textureLoader.load('assets/texturas/pared3.png'), // Arriba
       textureLoader.load('assets/texturas/pared4.png'), // Abajo
       textureLoader.load('assets/texturas/pared.jpg'), // Izquierda
-      textureLoader.load('assets/texturas/pared2.png')  // Derecha
+      textureLoader.load('assets/texturas/pared2.png') // Derecha
     ];
+
+    if (this.modoOscuro == true) {
+     
+
+      // Luz blanca central como un foco
+      const centerLight = new THREE.SpotLight(0xffffff, 50, 10, Math.PI / 8, 0.5, 2);
+      centerLight.position.set(0, 5, 0); // Posición elevada para que apunte hacia abajo
+      centerLight.target.position.set(0, 0, 0); // Apunta al centro de la escena
+     
+      this.scene.add(centerLight);
+      this.scene.add(centerLight.target); // Es necesario agregar el target para que funcione correctamente
+
+      // Ajustar las luces existentes para el modo oscuro
+      warmLight1.color.set(0x0a1530); // Tono azul oscuro
+      warmLight1.intensity = 0.2;
+      warmLight2.color.set(0x0a1530); // Tono azul oscuro
+      warmLight2.intensity = 0.5;
+      ambientLight.color.set(0x0a1530); // Tono azul oscuro
+      ambientLight.intensity = 0.2;
+
+      // Cargar texturas para el modo oscuro
+      wallTextures = [
+        textureLoader.load('assets/texturas/3.png'), // Frente
+        textureLoader.load('assets/texturas/2.png'), // Atrás
+        textureLoader.load('assets/texturas/cieloNocturno.jpg'), // Arriba
+        textureLoader.load('assets/texturas/piso.png'), // Abajo
+        textureLoader.load('assets/texturas/n.jpg'), // Izquierda
+        textureLoader.load('assets/texturas/atras.jpg') // Derecha
+      ];
+    }
 
     // Configurar que cada textura se repita si quieres
     wallTextures.forEach(tex => {
@@ -140,20 +192,26 @@ export class ZorroBlancoExplicando3DComponent implements OnInit {
     // Controles para mover la cámara con el ratón
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.enableZoom = false; // Desactiva el zoom con scroll o pinza
-
   }
 
 
+
   private loadModel() {
+
+    let pathPersonaje = 'assets/models/zorroModoClaro/'
+
+    if (this.modoOscuro == true) {
+      pathPersonaje = 'assets/models/zorroModoOscuro/'
+    }
     const mtlLoader = new MTLLoader();
-    mtlLoader.setPath('assets/models/');
+    mtlLoader.setPath(pathPersonaje);
 
     mtlLoader.load('source.mtl', (materials: any) => {
       materials.preload();
 
       const objLoader = new OBJLoader();
       objLoader.setMaterials(materials);
-      objLoader.setPath('assets/models/');
+      objLoader.setPath(pathPersonaje);
       objLoader.load('source.obj', (object: any) => {
         this.model = object; // 🔹 Guardamos referencia para animarlo
         object.position.set(0, 0, 0);

@@ -121,7 +121,7 @@ export class HomeComponent implements AfterViewInit {
           start: 'top 8%',
           end: 'top 30%',
           scrub: true,
-          markers: true,
+          
           onUpdate: (self) => console.log(`Progreso: ${(self.progress * 100).toFixed(1)}%`)
         }
       }
@@ -255,7 +255,7 @@ export class HomeComponent implements AfterViewInit {
         start: 'top top',
         end: 'bottom bottom',
         scrub: 0.5,
-        markers: true,
+        
       },
       onUpdate: () => {
         const currentFrame = Math.floor(obj.frame);
@@ -306,7 +306,7 @@ export class HomeComponent implements AfterViewInit {
             start: 'top 80%',
             end: 'bottom 10%',
             toggleActions: 'play reverse play reverse',
-            markers: true,
+            
           }
         }
       );

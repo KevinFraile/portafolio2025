@@ -21,11 +21,13 @@
 
 <!-- Botón flotante arriba a la derecha -->
 <button class="theme-toggle-btn" (click)="toggleTheme()">🌓</button>
+<app-home [modoOscuro]="isDarkMode"></app-home>
 }@else {
 <!-- Botón flotante arriba a la derecha -->
 <button class="theme-toggle-btn" (click)="toggleTheme()">🌓</button>
+<app-home [modoOscuro]="isDarkMode"></app-home>
 }
 
-<app-home [modoOscuro]="isDarkMode"></app-home>
+
 <!-- Contenido de tu app -->
 <router-outlet></router-outlet>
