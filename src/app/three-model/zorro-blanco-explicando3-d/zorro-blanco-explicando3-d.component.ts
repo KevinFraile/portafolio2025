@@ -17,7 +17,7 @@ import { Render3DService } from '../../service/render3-d.service';
   templateUrl: './zorro-blanco-explicando3-d.component.html',
   styleUrl: './zorro-blanco-explicando3-d.component.scss'
 })
-export class ZorroBlancoExplicando3DComponent implements OnInit, OnDestroy {
+export class ZorroBlancoExplicando3DComponent implements OnInit {
 
   // Obtiene el contenedor del canvas del DOM para poder inyectar el renderizador de Three.js
   @ViewChild('canvasContainer', { static: true }) canvasContainer!: ElementRef<HTMLDivElement>;
@@ -52,32 +52,8 @@ export class ZorroBlancoExplicando3DComponent implements OnInit, OnDestroy {
     this.initMouseControl();
   }
 
-  // Este método se ejecuta justo antes de que el componente sea destruido
-  ngOnDestroy() {
-    // Es crucial desuscribirse para evitar fugas de memoria.
-    if (this.modoOscuroSubscription) {
-      this.modoOscuroSubscription.unsubscribe();
-    }
-    // Detiene la animación de Three.js para que el `requestAnimationFrame` no se ejecute infinitamente.
-    if (this.animationId) {
-      cancelAnimationFrame(this.animationId);
-    }
-    // Llama a la función de limpieza para liberar los recursos de la GPU.
-    this.disposeScene();
-    // Libera el renderizador y elimina el elemento canvas del DOM.
-    if (this.renderer) {
-      this.renderer.dispose();
-      this.canvasContainer.nativeElement.removeChild(this.renderer.domElement);
-    }
-  }
 
-  // ---
 
-  /**
-   * Refresca completamente la escena 3D en función del modo oscuro.
-   * Este método se llama en cada cambio del tema.
-   * @param isModoOscuro indica si la escena debe ser oscura o clara.
-   */
   private refresh3DScene(isModoOscuro: boolean) {
     // 1. Limpiamos la escena anterior para no superponer objetos.
     this.disposeScene();
@@ -97,37 +73,9 @@ export class ZorroBlancoExplicando3DComponent implements OnInit, OnDestroy {
     }
   }
 
-  // ---
-
-  /**
-   * Libera todos los recursos de la GPU (geometrías, materiales, texturas).
-   * Esto es vital para evitar fugas de memoria.
-   */
+  
   private disposeScene() {
     if (this.scene) {
-      // Recorremos cada objeto de la escena.
-      this.scene.traverse((object: any) => {
-        // Si el objeto tiene una geometría, la liberamos.
-        if (object.isMesh && object.geometry) {
-          object.geometry.dispose();
-        }
-
-        // Si el objeto tiene un material, lo liberamos.
-        if (object.isMesh && object.material) {
-          if (object.material.isMaterial) {
-            this.disposeMaterial(object.material);
-          } else if (Array.isArray(object.material)) {
-            for (const material of object.material) {
-              this.disposeMaterial(material);
-            }
-          }
-        }
-      });
-
-      // Liberamos la textura del fondo si existe.
-      if (this.scene.background && (this.scene.background as any).dispose) {
-        (this.scene.background as any).dispose();
-      }
 
       // Eliminamos todos los objetos de la escena.
       while (this.scene.children.length > 0) {
@@ -137,30 +85,8 @@ export class ZorroBlancoExplicando3DComponent implements OnInit, OnDestroy {
     }
   }
 
-  // ---
 
-  /**
-   * Libera un material y todas sus texturas asociadas.
-   * @param material El material a liberar.
-   */
-  private disposeMaterial(material: THREE.Material) {
-    for (const key of Object.keys(material)) {
-      const value = (material as any)[key];
-      // Si la propiedad es una textura, la liberamos.
-      if (value && typeof value === 'object' && 'isTexture' in value) {
-        value.dispose();
-      }
-    }
-    // Finalmente, liberamos el material en sí.
-    material.dispose();
-  }
 
-  // ---
-
-  /**
-   * Configura la escena, la cámara, el renderizador, las luces y la "habitación".
-   * @param isModoOscuro Define si se usan los colores y texturas del modo oscuro o claro.
-   */
   private initThree(isModoOscuro: boolean) {
     this.scene = new THREE.Scene();
     this.camera = new THREE.PerspectiveCamera(
@@ -259,12 +185,7 @@ export class ZorroBlancoExplicando3DComponent implements OnInit, OnDestroy {
     this.controls.enableZoom = false;
   }
 
-  // ---
-
-  /**
-   * Carga el modelo 3D del zorro según el modo oscuro actual.
-   * @param isModoOscuro Define si se carga el modelo oscuro o claro.
-   */
+  
   private loadModel(isModoOscuro: boolean) {
     let pathPersonaje = 'assets/models/zorroModoClaro/'
 
