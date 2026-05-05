@@ -1,37 +1,37 @@
 @if (cargandoModoOscuro) {
-@if (videoOscuro) {
-<div class="contVideoClaro animate__animated opacity-0" id="contenedorVideo">
-    <video #videoModoOscuro id="videoModoOscuro" src="./assets/quitarModoOscuro.mp4" muted playsinline autoplay
-        class="opacity-0 animate__animated"></video>
+  @if (videoOscuro) {
+    <div class="contVideoClaro animate__animated opacity-0" id="contenedorVideo">
+      <div class="cinema-bar cinema-bar-top"><span class="cinema-label">{{ cinemaTitle }}</span></div>
+      <video #videoModoOscuro id="videoModoOscuro" src="./assets/quitarModoOscuro.mp4" muted playsinline autoplay class="opacity-0 animate__animated"></video>
+      <div class="cinema-bar cinema-bar-bottom"><span class="cinema-label-bottom">MODO CLARO · {{ currentYear }}</span></div>
+    </div>
+  } @else {
+    <div class="contVideoOscuro animate__animated opacity-0" id="contenedorVideo">
+      <div class="cinema-bar cinema-bar-top"><span class="cinema-label">{{ cinemaTitle }}</span></div>
+      <video #videoModoOscuro id="videoModoOscuro" src="./assets/modoOscuro.mp4" muted playsinline autoplay class="opacity-0 animate__animated"></video>
+      <div class="cinema-bar cinema-bar-bottom"><span class="cinema-label-bottom">MODO OSCURO · {{ currentYear }}</span></div>
+    </div>
+  }
+}
+
+<!-- Toggle: hint a la izquierda, toggle a la derecha -->
+<div class="toggle-wrapper" [class.is-dark]="isDarkMode">
+
+  <!-- Hint: aparece al hover deslizándose desde la derecha -->
+  <span class="toggle-hint">
+    {{ isDarkMode ? 'modo oscuro' : 'modo claro' }}
+  </span>
+
+  <button
+    class="theme-toggle-btn"
+    (click)="toggleTheme()"
+    [attr.aria-label]="isDarkMode ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'">
+    <span class="toggle-track">
+      <span class="toggle-thumb">{{ isDarkMode ? '☀️' : '🌙' }}</span>
+    </span>
+  </button>
 
 </div>
 
-}@else {
-<div class="contVideoOscuro animate__animated opacity-0" id="contenedorVideo">
-    <video #videoModoOscuro id="videoModoOscuro" src="./assets/modoOscuro.mp4" muted playsinline autoplay
-        class="opacity-0 animate__animated"></video>
-</div>
-}
-
-}
-
-
-
-@if (cargandoModoOscuro) {
-
-<!-- Botón flotante arriba a la derecha -->
-<button class="theme-toggle-btn" (click)="toggleTheme()">🌓</button>
-
-}@else {
-<!-- Botón flotante arriba a la derecha -->
-<button class="theme-toggle-btn" (click)="toggleTheme()">🌓</button>
-
-}
-
-<app-home  [modoOscuro]="isDarkMode"></app-home>
-
-
-
-
-<!-- Contenido de tu app -->
+<app-home [modoOscuro]="isDarkMode"></app-home>
 <router-outlet></router-outlet>
