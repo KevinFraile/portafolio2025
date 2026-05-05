@@ -104,8 +104,8 @@ export class HomeComponent implements OnInit, AfterViewInit {
   segundos = 6;
   totalFrames = 232;
 
-  preloadedFramesClaro: HTMLImageElement[] = [];
-  preloadedFramesOscuro: HTMLImageElement[] = [];
+  preloadedFramesClaro: HTMLImageElement[] = new Array(240);
+  preloadedFramesOscuro: HTMLImageElement[] = new Array(240);
 
   @ViewChild('zorroVideoSaludoSaludo') zorroVideoSaludo!: ElementRef<HTMLVideoElement>;
   @ViewChild('scrollImage', { static: true }) scrollImageRef!: ElementRef<HTMLImageElement>;
@@ -145,8 +145,8 @@ export class HomeComponent implements OnInit, AfterViewInit {
     );
   }
 
-  // ──────────────────────────────────────────────────────────────
-  // LOADER REAL: Mantiene la pantalla activa hasta que todos los frames estén cargados
+ // ──────────────────────────────────────────────────────────────
+  // LOADER OPTIMIZADO: Carga rápida y background loading
   // ──────────────────────────────────────────────────────────────
   private async iniciarLoaderConRecursos(): Promise<void> {
     const overlay   = document.getElementById('loaderOverlay');
@@ -161,10 +161,9 @@ export class HomeComponent implements OnInit, AfterViewInit {
     };
 
     setProgress(0);
-
     const promises: Promise<any>[] = [];
 
-    // ── 1a. Iconos de conocimientos ─────────────
+    // ── 1. Iconos de conocimientos ─────────────
     this.conocimientosArray.forEach(item => {
       promises.push(new Promise<void>(resolve => {
         const img = new Image();
@@ -173,7 +172,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
       }));
     });
 
-    // ── 1b. Video del hero ─────────
+    // ── 2. Video del hero ─────────
     const videoHero = document.getElementById('zorroVideoSaludoSaludo') as HTMLVideoElement | null;
     if (videoHero) {
       promises.push(new Promise<void>(resolve => {
@@ -184,10 +183,11 @@ export class HomeComponent implements OnInit, AfterViewInit {
       }));
     }
 
-    // ── 1c. Carga de TODAS las imágenes de los frames ───────
-    promises.push(...this.preloadFramesPromises());
+    // ── 3. ¡MAGIA!: Solo bloquear la carga con los primeros 20 frames ───────
+    const framesToBlock = 20; 
+    promises.push(...this.preloadFirstFrames(framesToBlock));
 
-    // ── 2. Progreso en tiempo real ──
+    // ── Progreso en tiempo real ──
     const total = promises.length;
     let done = 0;
     setProgress(5); 
@@ -196,16 +196,17 @@ export class HomeComponent implements OnInit, AfterViewInit {
       p.then(() => { done++; setProgress(5 + (done / total) * 90); })
     );
 
+    // Esperamos SOLO lo estrictamente necesario
     await Promise.all(tracked);
 
     setProgress(100);
     await new Promise(res => setTimeout(res, 350));
 
-    // ── 3. Inicializa scroll y video ──────────────────
+    // ── Inicializa scroll y video ──────────────────
     this.setupVideoObserver();
     this.inicializarVideoScroll();
 
-    // ── 4. Cierra el loader ───────────────────────────
+    // ── Cierra el loader e inicia la carga secundaria ──────────
     gsap.to(overlay, {
       opacity: 0,
       duration: 0.7,
@@ -214,6 +215,82 @@ export class HomeComponent implements OnInit, AfterViewInit {
         overlay.style.display = 'none';
         document.body.style.overflow = '';
         this.animarEntradaHero();
+        
+        // 4. Iniciar carga silenciosa del resto de frames
+        this.backgroundLoadRestOfFrames(framesToBlock);
+      }
+    });
+  }
+
+  // Carga solo los primeros N frames para un inicio rápido
+  private preloadFirstFrames(limit: number): Promise<void>[] {
+    const framePromises: Promise<void>[] = [];
+    if (this.isMobile) return framePromises;
+
+    for (let i = 0; i < limit; i++) {
+      framePromises.push(new Promise<void>(resolve => {
+        const img = new Image();
+        img.onload = img.onerror = () => resolve();
+        img.src = this.framePath(i); // Solo usa el modo actual
+        
+        if (this.modoOscuro) this.preloadedFramesOscuro[i] = img;
+        else this.preloadedFramesClaro[i] = img;
+      }));
+    }
+    return framePromises;
+  }
+
+  // Carga el resto de imágenes por "lotes" sin bloquear el navegador
+  private backgroundLoadRestOfFrames(startIndex: number): void {
+    if (this.isMobile) return;
+    
+    const limit = this.modoOscuro ? 240 : 232;
+    
+    // Descarga en pequeños paquetes de 10 imágenes cada 200ms
+    const loadBatch = (start: number, batchSize: number) => {
+      const end = Math.min(start + batchSize, limit);
+      if (start >= limit) return;
+
+      for (let i = start; i < end; i++) {
+        const img = new Image();
+        img.src = this.framePath(i);
+        if (this.modoOscuro) this.preloadedFramesOscuro[i] = img;
+        else this.preloadedFramesClaro[i] = img;
+      }
+
+      setTimeout(() => loadBatch(end, batchSize), 200);
+    };
+
+    loadBatch(startIndex, 10);
+  }
+
+  // Inicializador de scroll modificado con Fallback de seguridad
+  inicializarVideoScroll(): void {
+    if (this.isMobile) {
+      const image = this.scrollImageRef?.nativeElement;
+      if (image) image.src = this.framePath(0);
+      return;
+    }
+
+    const image = this.scrollImageRef.nativeElement;
+    const container = this.containerRef.nativeElement;
+    const obj = { frame: 0 };
+
+    gsap.to(obj, {
+      frame: () => this.totalFrames - 1,
+      ease: 'none',
+      scrollTrigger: { trigger: container, start: 'top top', end: 'bottom bottom', scrub: 0.5 },
+      onUpdate: () => {
+        const currentFrame = Math.floor(obj.frame);
+        const images = this.modoOscuro ? this.preloadedFramesOscuro : this.preloadedFramesClaro;
+        
+        // Si el usuario scrollea rápido y la imagen en segundo plano ya terminó, la usamos.
+        // Si aún no está lista, pedimos el string directo y dejamos que el navegador la gestione.
+        if (images[currentFrame] && images[currentFrame].complete) {
+          image.src = images[currentFrame].src;
+        } else {
+          image.src = this.framePath(currentFrame); 
+        }
       }
     });
   }
@@ -413,27 +490,5 @@ export class HomeComponent implements OnInit, AfterViewInit {
     return this.modoOscuro ? `assets/scroll-video-oscuro/frame_${padded}.jpg` : `assets/scroll-video/frame_${padded}.jpg`;
   }
 
-  inicializarVideoScroll(): void {
-    if (this.isMobile) {
-      const image = this.scrollImageRef?.nativeElement;
-      if (image) image.src = this.framePath(0);
-      return;
-    }
-
-    const image = this.scrollImageRef.nativeElement;
-    const container = this.containerRef.nativeElement;
-    const obj = { frame: 0 };
-
-    gsap.to(obj, {
-      frame: () => this.totalFrames - 1,
-      ease: 'none',
-      scrollTrigger: { trigger: container, start: 'top top', end: 'bottom bottom', scrub: 0.5 },
-      onUpdate: () => {
-        const currentFrame = Math.floor(obj.frame);
-        // Intercambiando la imagen con los elementos del array pre-cargado
-        const images = this.modoOscuro ? this.preloadedFramesOscuro : this.preloadedFramesClaro;
-        if (images[currentFrame]?.src) image.src = images[currentFrame].src;
-      }
-    });
-  }
+  
 }
