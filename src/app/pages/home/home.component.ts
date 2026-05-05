@@ -125,19 +125,15 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     document.body.style.overflow = 'hidden';
-    this.iniciarLoader();
   }
 
   ngAfterViewInit(): void {
-    this.preloadFrames();
-    this.setupVideoObserver();
-    this.inicializarVideoScroll();
-    
-    setTimeout(() => {
+    // Arranca el sistema de carga real: espera recursos, luego inicializa todo
+    this.iniciarLoaderConRecursos().then(() => {
       this.animacionCard();
       this.setupScrollAnimations();
       this.setupNarrativaScroll();
-    }, 2800);
+    });
 
     gsap.fromTo('.blur-layer',
       { backdropFilter: 'blur(20px)', background: 'rgba(0, 0, 0, 0.2)' },
@@ -150,21 +146,89 @@ export class HomeComponent implements OnInit, AfterViewInit {
     );
   }
 
-  iniciarLoader(): void {
-    const overlay = document.getElementById('loaderOverlay');
+  // ──────────────────────────────────────────────────────────────
+  // LOADER REAL: no cierra hasta que todos los recursos estén listos
+  // ──────────────────────────────────────────────────────────────
+  private async iniciarLoaderConRecursos(): Promise<void> {
+    const overlay   = document.getElementById('loaderOverlay');
+    const barFill   = document.getElementById('loaderBarFill');
+    const loaderPct = document.getElementById('loaderPct');
     if (!overlay) return;
 
-    gsap.delayedCall(2.5, () => {
-      gsap.to(overlay, {
-        opacity: 0, 
-        duration: 0.8, 
-        ease: 'power2.inOut',
-        onComplete: () => {
-          overlay.style.display = 'none';
-          document.body.style.overflow = ''; 
-          this.animarEntradaHero();
-        }
-      });
+    // Actualiza la barra de progreso visual
+    const setProgress = (pct: number) => {
+      const p = Math.min(Math.round(pct), 100);
+      if (barFill)   barFill.style.width = `${p}%`;
+      if (loaderPct) loaderPct.textContent = `${p}%`;
+    };
+
+    setProgress(0);
+
+    // Timeout de seguridad: si un recurso tarda más de 10s se resuelve igual
+    const withTimeout = <T>(p: Promise<T>, ms = 10000): Promise<T | null> =>
+      Promise.race([p, new Promise<null>(res => setTimeout(() => res(null), ms))]);
+
+    const promises: Promise<any>[] = [];
+
+    // ── 1a. Iconos de conocimientos (externas CDN) ─────────────
+    this.conocimientosArray.forEach(item => {
+      promises.push(withTimeout(new Promise<void>(resolve => {
+        const img = new Image();
+        img.onload = img.onerror = () => resolve();
+        img.src = item.imagen;
+      })));
+    });
+
+    // ── 1b. Video del hero (primer frame reproducible) ─────────
+    const videoHero = document.getElementById('zorroVideoSaludoSaludo') as HTMLVideoElement | null;
+    if (videoHero) {
+      promises.push(withTimeout(new Promise<void>(resolve => {
+        if (videoHero.readyState >= 3) { resolve(); return; }
+        const handler = () => { resolve(); videoHero.removeEventListener('canplay', handler); };
+        videoHero.addEventListener('canplay', handler);
+        videoHero.onerror = () => resolve();
+      })));
+    }
+
+    // ── 1c. Primer frame del scroll-video (solo desktop) ───────
+    if (!this.isMobile) {
+      promises.push(withTimeout(new Promise<void>(resolve => {
+        const img = new Image();
+        img.onload = img.onerror = () => resolve();
+        img.src = this.framePath(0);
+      })));
+    }
+
+    // ── 2. Progreso en tiempo real según recursos completados ──
+    const total = promises.length;
+    let done = 0;
+    setProgress(5); // mínimo inicial para que el usuario vea actividad
+
+    const tracked = promises.map(p =>
+      p.then(() => { done++; setProgress(5 + (done / total) * 90); })
+    );
+
+    await Promise.all(tracked);
+
+    // Completa la barra al 100% con una pausa visual breve
+    setProgress(100);
+    await new Promise(res => setTimeout(res, 350));
+
+    // ── 3. Ahora sí inicializa scroll y video ──────────────────
+    this.preloadFrames();
+    this.setupVideoObserver();
+    this.inicializarVideoScroll();
+
+    // ── 4. Cierra el loader con GSAP ───────────────────────────
+    gsap.to(overlay, {
+      opacity: 0,
+      duration: 0.7,
+      ease: 'power2.inOut',
+      onComplete: () => {
+        overlay.style.display = 'none';
+        document.body.style.overflow = '';
+        this.animarEntradaHero();
+      }
     });
   }
 
