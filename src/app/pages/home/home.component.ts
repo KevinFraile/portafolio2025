@@ -42,52 +42,52 @@ export class HomeComponent implements OnInit, AfterViewInit {
   ];
 
   proyectosSecundarios = [
-  {
-    id: 'tender',
-    kicker: 'Laboral · Zona Logística',
-    nombre: 'Tender WMS Support',
-    desc: 'Middleware de alto rendimiento para WMS. Especializado en consultas personalizadas ágiles, picking avanzado para clientes y rastreo IoT de equipos de frío para Bavaria.',
-    tags: ['Angular', 'Flask', 'MySQL'],
-    link: 'https://tenderzl.zonalogistica.com.co/#/inicio',
-    linkLabel: 'Ver plataforma'
-  },
-  {
-    id: 'udec-eventos',
-    kicker: 'Universidad de Cundinamarca',
-    nombre: 'Udec Eventos',
-    desc: 'Sistema de gestión y control de eventos universitarios. Automatización de registros, asistencia y generación de certificados para la comunidad académica.',
-    tags: ['Angular', 'Node.js', 'PostgreSQL'],
-    link: '#', // Añadir link si aplica
-    linkLabel: 'Ver proyecto'
-  },
-  {
-    id: 'sga',
-    kicker: 'Laboral · Zona Logística',
-    nombre: 'Sistema SGA',
-    desc: 'Trazabilidad de rutas y vehículos. Migración de datos manuales a un modelo estructurado relacional con procesamiento en tiempo real.',
-    tags: ['Angular', 'MySQL', 'Full Stack'],
-    link: 'https://sgazl.zonalogistica.com.co/#/',
-    linkLabel: 'Ver sistema'
-  },
-  {
-    id: 'inspector',
-    kicker: 'Freelance',
-    nombre: 'Inspector Systems',
-    desc: 'Plataforma de gestión de siniestros. Liderazgo en el frontend integrando WebSockets y Diagrama de Gantt interactivo para el seguimiento de casos.',
-    tags: ['Ionic', 'Angular', 'Gantt'],
-    link: 'https://www.inspector.systems/auth/login',
-    linkLabel: 'Sitio oficial'
-  },
-  {
-    id: 'atarabi',
-    kicker: 'Berraco Dev',
-    nombre: 'Atarabi AI',
-    desc: 'Aplicación de registro emocional por voz. Implementa IA para el análisis de sentimiento y recomendaciones personalizadas de bienestar.',
-    tags: ['Ionic', 'Firebase', 'IA'],
-    link: 'https://play.google.com/store/apps/details?id=com.atarabi.app&hl=es',
-    linkLabel: 'Play Store'
-  }
-];
+    {
+      id: 'tender',
+      kicker: 'Laboral · Zona Logística',
+      nombre: 'Tender WMS Support',
+      desc: 'Middleware de alto rendimiento para WMS. Especializado en consultas personalizadas ágiles, picking avanzado para clientes y rastreo IoT de equipos de frío para Bavaria.',
+      tags: ['Angular', 'Flask', 'MySQL'],
+      link: 'https://tenderzl.zonalogistica.com.co/#/inicio',
+      linkLabel: 'Ver plataforma'
+    },
+    {
+      id: 'udec-eventos',
+      kicker: 'Universidad de Cundinamarca',
+      nombre: 'Udec Eventos',
+      desc: 'Sistema de gestión y control de eventos universitarios. Automatización de registros, asistencia y generación de certificados para la comunidad académica.',
+      tags: ['Angular', 'Node.js', 'PostgreSQL'],
+      link: '#',
+      linkLabel: 'Ver proyecto'
+    },
+    {
+      id: 'sga',
+      kicker: 'Laboral · Zona Logística',
+      nombre: 'Sistema SGA',
+      desc: 'Trazabilidad de rutas y vehículos. Migración de datos manuales a un modelo estructurado relacional con procesamiento en tiempo real.',
+      tags: ['Angular', 'MySQL', 'Full Stack'],
+      link: 'https://sgazl.zonalogistica.com.co/#/',
+      linkLabel: 'Ver sistema'
+    },
+    {
+      id: 'inspector',
+      kicker: 'Freelance',
+      nombre: 'Inspector Systems',
+      desc: 'Plataforma de gestión de siniestros. Liderazgo en el frontend integrando WebSockets y Diagrama de Gantt interactivo para el seguimiento de casos.',
+      tags: ['Ionic', 'Angular', 'Gantt'],
+      link: 'https://www.inspector.systems/auth/login',
+      linkLabel: 'Sitio oficial'
+    },
+    {
+      id: 'atarabi',
+      kicker: 'Berraco Dev',
+      nombre: 'Atarabi AI',
+      desc: 'Aplicación de registro emocional por voz. Implementa IA para el análisis de sentimiento y recomendaciones personalizadas de bienestar.',
+      tags: ['Ionic', 'Firebase', 'IA'],
+      link: 'https://play.google.com/store/apps/details?id=com.atarabi.app&hl=es',
+      linkLabel: 'Play Store'
+    }
+  ];
 
   formacion = [
     { titulo: 'Ingeniería de Software', inst: 'Universidad de Cundinamarca', fecha: '2023 – Actualidad', nota: 'Cursando 6° semestre. Enfoque en arquitectura.' },
@@ -128,7 +128,6 @@ export class HomeComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    // Arranca el sistema de carga real: espera recursos, luego inicializa todo
     this.iniciarLoaderConRecursos().then(() => {
       this.animacionCard();
       this.setupScrollAnimations();
@@ -147,7 +146,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
   }
 
   // ──────────────────────────────────────────────────────────────
-  // LOADER REAL: no cierra hasta que todos los recursos estén listos
+  // LOADER REAL: Mantiene la pantalla activa hasta que todos los frames estén cargados
   // ──────────────────────────────────────────────────────────────
   private async iniciarLoaderConRecursos(): Promise<void> {
     const overlay   = document.getElementById('loaderOverlay');
@@ -155,7 +154,6 @@ export class HomeComponent implements OnInit, AfterViewInit {
     const loaderPct = document.getElementById('loaderPct');
     if (!overlay) return;
 
-    // Actualiza la barra de progreso visual
     const setProgress = (pct: number) => {
       const p = Math.min(Math.round(pct), 100);
       if (barFill)   barFill.style.width = `${p}%`;
@@ -164,45 +162,35 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
     setProgress(0);
 
-    // Timeout de seguridad: si un recurso tarda más de 10s se resuelve igual
-    const withTimeout = <T>(p: Promise<T>, ms = 10000): Promise<T | null> =>
-      Promise.race([p, new Promise<null>(res => setTimeout(() => res(null), ms))]);
-
     const promises: Promise<any>[] = [];
 
-    // ── 1a. Iconos de conocimientos (externas CDN) ─────────────
+    // ── 1a. Iconos de conocimientos ─────────────
     this.conocimientosArray.forEach(item => {
-      promises.push(withTimeout(new Promise<void>(resolve => {
+      promises.push(new Promise<void>(resolve => {
         const img = new Image();
         img.onload = img.onerror = () => resolve();
         img.src = item.imagen;
-      })));
+      }));
     });
 
-    // ── 1b. Video del hero (primer frame reproducible) ─────────
+    // ── 1b. Video del hero ─────────
     const videoHero = document.getElementById('zorroVideoSaludoSaludo') as HTMLVideoElement | null;
     if (videoHero) {
-      promises.push(withTimeout(new Promise<void>(resolve => {
+      promises.push(new Promise<void>(resolve => {
         if (videoHero.readyState >= 3) { resolve(); return; }
         const handler = () => { resolve(); videoHero.removeEventListener('canplay', handler); };
         videoHero.addEventListener('canplay', handler);
         videoHero.onerror = () => resolve();
-      })));
+      }));
     }
 
-    // ── 1c. Primer frame del scroll-video (solo desktop) ───────
-    if (!this.isMobile) {
-      promises.push(withTimeout(new Promise<void>(resolve => {
-        const img = new Image();
-        img.onload = img.onerror = () => resolve();
-        img.src = this.framePath(0);
-      })));
-    }
+    // ── 1c. Carga de TODAS las imágenes de los frames ───────
+    promises.push(...this.preloadFramesPromises());
 
-    // ── 2. Progreso en tiempo real según recursos completados ──
+    // ── 2. Progreso en tiempo real ──
     const total = promises.length;
     let done = 0;
-    setProgress(5); // mínimo inicial para que el usuario vea actividad
+    setProgress(5); 
 
     const tracked = promises.map(p =>
       p.then(() => { done++; setProgress(5 + (done / total) * 90); })
@@ -210,16 +198,14 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
     await Promise.all(tracked);
 
-    // Completa la barra al 100% con una pausa visual breve
     setProgress(100);
     await new Promise(res => setTimeout(res, 350));
 
-    // ── 3. Ahora sí inicializa scroll y video ──────────────────
-    this.preloadFrames();
+    // ── 3. Inicializa scroll y video ──────────────────
     this.setupVideoObserver();
     this.inicializarVideoScroll();
 
-    // ── 4. Cierra el loader con GSAP ───────────────────────────
+    // ── 4. Cierra el loader ───────────────────────────
     gsap.to(overlay, {
       opacity: 0,
       duration: 0.7,
@@ -230,6 +216,36 @@ export class HomeComponent implements OnInit, AfterViewInit {
         this.animarEntradaHero();
       }
     });
+  }
+
+  // Convierte las imágenes en Promesas para obligar al Loader a esperarlas
+  private preloadFramesPromises(): Promise<void>[] {
+    const framePromises: Promise<void>[] = [];
+    if (this.isMobile) return framePromises;
+
+    for (let i = 0; i < 240; i++) {
+      const padded = String(i).padStart(3, '0');
+
+      // Promesa Claro
+      const pClaro = new Promise<void>(resolve => {
+        const imgClaro = new Image();
+        imgClaro.onload = imgClaro.onerror = () => resolve();
+        imgClaro.src = `assets/scroll-video/frame_${padded}.jpg`;
+        this.preloadedFramesClaro.push(imgClaro);
+      });
+      framePromises.push(pClaro);
+
+      // Promesa Oscuro
+      const pOscuro = new Promise<void>(resolve => {
+        const imgOscuro = new Image();
+        imgOscuro.onload = imgOscuro.onerror = () => resolve();
+        imgOscuro.src = `assets/scroll-video-oscuro/frame_${padded}.jpg`;
+        this.preloadedFramesOscuro.push(imgOscuro);
+      });
+      framePromises.push(pOscuro);
+    }
+
+    return framePromises;
   }
 
   private animarEntradaHero(): void {
@@ -298,9 +314,6 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
     if (!ncards.length) return;
 
-    // En móvil: las 4 ncards se muestran apiladas visibles (CSS las controla).
-    // No registramos ningún ScrollTrigger para evitar el bug de superposición
-    // y el conflicto con el scroll táctil del sistema.
     if (this.isMobile) {
       ncards.forEach(card => {
         card.classList.add('active');
@@ -394,20 +407,6 @@ export class HomeComponent implements OnInit, AfterViewInit {
     return this.modoOscuro ? './assets/misConocimientosModoOscuro.mp4' : './assets/conocimientos.mp4';
   }
 
-  preloadFrames(): void {
-    // En móvil no hay animación de scroll de frames: evitar
-    // cargar 480 imágenes innecesariamente (memoria + red).
-    if (this.isMobile) return;
-
-    for (let i = 0; i < 240; i++) {
-      const padded = String(i).padStart(3, '0');
-      const imgClaro = new Image(); imgClaro.src = `assets/scroll-video/frame_${padded}.jpg`;
-      const imgOscuro = new Image(); imgOscuro.src = `assets/scroll-video-oscuro/frame_${padded}.jpg`;
-      this.preloadedFramesClaro.push(imgClaro);
-      this.preloadedFramesOscuro.push(imgOscuro);
-    }
-  }
-
   framePath(index: number): string {
     const padded = String(index).padStart(3, '0');
     this.totalFrames = this.modoOscuro ? 240 : 232;
@@ -415,9 +414,6 @@ export class HomeComponent implements OnInit, AfterViewInit {
   }
 
   inicializarVideoScroll(): void {
-    // En móvil la narrativa es columna única: no hay columna derecha "sticky",
-    // el ScrollTrigger de 350vh rompe el layout y el scrub compite con el
-    // scroll táctil. Se muestra la primera frame estáticamente.
     if (this.isMobile) {
       const image = this.scrollImageRef?.nativeElement;
       if (image) image.src = this.framePath(0);
@@ -434,6 +430,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
       scrollTrigger: { trigger: container, start: 'top top', end: 'bottom bottom', scrub: 0.5 },
       onUpdate: () => {
         const currentFrame = Math.floor(obj.frame);
+        // Intercambiando la imagen con los elementos del array pre-cargado
         const images = this.modoOscuro ? this.preloadedFramesOscuro : this.preloadedFramesClaro;
         if (images[currentFrame]?.src) image.src = images[currentFrame].src;
       }

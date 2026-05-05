@@ -1,6 +1,6 @@
 <div class="contenedorGlobal" [ngClass]="{ 'dark-theme': modoOscuro == true }">
 
-    <!-- ================= LOADER (Text Loading Animado) ================= -->
+    <!-- ================= LOADER ================= -->
     <div id="loaderOverlay" class="loader-overlay" [ngClass]="{ 'loader-oscuro': modoOscuro == true }">
         <div class="loader"></div>
     </div>
@@ -25,16 +25,12 @@
         <div class="col-12 col-md-6 saludoText">
             <svg id="burbuja1" viewBox="261 128 382 342" xmlns="http://www.w3.org/2000/svg">
                 <g transform="translate(446.5 295.3)">
-                    <path
-                        d="M135.2 -126.6C172.4 -98.1 197.7 -49 193.1 -4.6C188.4 39.8 153.9 79.6 116.7 113.2C79.6 146.9 39.8 174.4 -0.3 174.7C-40.3 175 -80.6 147.9 -115.3 114.3C-149.9 80.6 -179 40.3 -185.3 -6.4C-191.7 -53 -175.4 -106.1 -140.7 -134.6C-106.1 -163.1 -53 -167 -2 -165C49 -163 98.1 -155.1 135.2 -126.6"
-                        fill="#615d5482" />
+                    <path d="M135.2 -126.6C172.4 -98.1 197.7 -49 193.1 -4.6C188.4 39.8 153.9 79.6 116.7 113.2C79.6 146.9 39.8 174.4 -0.3 174.7C-40.3 175 -80.6 147.9 -115.3 114.3C-149.9 80.6 -179 40.3 -185.3 -6.4C-191.7 -53 -175.4 -106.1 -140.7 -134.6C-106.1 -163.1 -53 -167 -2 -165C49 -163 98.1 -155.1 135.2 -126.6" fill="#615d5482" />
                 </g>
             </svg>
             <svg id="burbuja2" viewBox="277 188 319 268" xmlns="http://www.w3.org/2000/svg">
                 <g transform="translate(451.0 305.8)">
-                    <path
-                        d="M67.5 -93C86.9 -78.9 101.5 -58.3 112.9 -34.1C124.3 -9.9 132.5 17.9 125 40.5C117.5 63.1 94.3 80.5 70.9 91.6C47.4 102.8 23.7 107.6 -0.1 107.8C-23.9 107.9 -47.8 103.3 -71.6 92.3C-95.4 81.3 -119 63.8 -126.9 40.9C-134.7 18 -126.8 -10.3 -117.5 -38C-108.3 -65.7 -97.6 -92.7 -77.8 -106.6C-58 -120.5 -29 -121.2 -2.4 -117.9C24.1 -114.5 48.2 -107 67.5 -93"
-                        fill="#615d5482"></path>
+                    <path d="M67.5 -93C86.9 -78.9 101.5 -58.3 112.9 -34.1C124.3 -9.9 132.5 17.9 125 40.5C117.5 63.1 94.3 80.5 70.9 91.6C47.4 102.8 23.7 107.6 -0.1 107.8C-23.9 107.9 -47.8 103.3 -71.6 92.3C-95.4 81.3 -119 63.8 -126.9 40.9C-134.7 18 -126.8 -10.3 -117.5 -38C-108.3 -65.7 -97.6 -92.7 -77.8 -106.6C-58 -120.5 -29 -121.2 -2.4 -117.9C24.1 -114.5 48.2 -107 67.5 -93" fill="#615d5482"></path>
                 </g>
             </svg>
 
@@ -44,35 +40,26 @@
         </div>
     </div>
 
-    <!-- ================= CONOCIMIENTOS (Tarjetas bordeando al zorro) ================= -->
+    <!-- ================= CONOCIMIENTOS ================= -->
     <div class="row p-0 m-0 conocimientos py-5" [ngClass]="{ 'conocimientosModoOscuro': modoOscuro == true }">
         <div class="col-12 pb-5 px-md-5">
-            <!-- Título siempre blanco -->
-            <h2 class="text-titulos text-center mb-5 titulo-animado" style="color: #ffffff !important;">MIS
-                CONOCIMIENTOS</h2>
+            <h2 class="text-titulos text-center mb-5 titulo-animado" style="color: #ffffff !important;">MIS CONOCIMIENTOS</h2>
 
             <div class="conocimientos-bloque">
-
-                <!-- EL VIDEO ASOMÁNDOSE POR LA DERECHA -->
                 <div class="video-zorro-float">
                     @if (zorroVideoConocimientos){
-                    <video id="zorroVideoConocimientos" #zorroVideoConocimientos [src]="videoSrcConocimientos()" muted
-                        playsinline autoplay (timeupdate)="checkTime('conocimientos')"
-                        (click)="reproducir('conocimientos')"></video>
+                    <video id="zorroVideoConocimientos" #zorroVideoConocimientos [src]="videoSrcConocimientos()" muted playsinline autoplay (timeupdate)="checkTime('conocimientos')" (click)="reproducir('conocimientos')"></video>
                     }
                 </div>
 
-                <!-- LAS TARJETAS FLUYEN ALREDEDOR DEL VIDEO -->
                 @for (item of conocimientosArray; track $index) {
                 <div class="card-inline-wrapper">
                     <div #card class="card-wrapper">
                         <div class="card-flip">
                             <div class="card-inner">
                                 <div class="card-front">
-                                    <img [ngClass]="{ 'invertirColor': item.nombre === 'Flask' || item.nombre === 'Python' || item.nombre === 'Git' }"
-                                        [src]="item.imagen" alt="{{ item.nombre }}" class="img-fluid p-3" />
-                                    <h6 class="text-dinamico-claro fw-bold mt-2"
-                                        style="font-family: 'Quicksand', sans-serif;">{{ item.nombre }}</h6>
+                                    <img [ngClass]="{ 'invertirColor': item.nombre === 'Flask' || item.nombre === 'Python' || item.nombre === 'Git' }" [src]="item.imagen" alt="{{ item.nombre }}" class="img-fluid p-3" />
+                                    <h6 class="text-dinamico-claro fw-bold mt-2" style="font-family: 'Quicksand', sans-serif;">{{ item.nombre }}</h6>
                                 </div>
                                 <div class="card-back">
                                     <h5 class="fw-bold mb-2 text-dinamico-back">{{ item.nombre }}</h5>
@@ -84,7 +71,6 @@
                 </div>
                 }
             </div>
-            <!-- Limpiamos el float -->
             <div style="clear: both;"></div>
         </div>
     </div>
@@ -93,64 +79,26 @@
     <div class="seccion-narrativa">
         <div class="narrativa-col-left">
             <div class="narrativa-sticky-wrapper">
-
-                <!-- CARD 0: EL IMPACTO EN NEGOCIO -->
                 <div class="ncard active" id="ncard0">
                     <span class="ncard-tag text-dinamico-tag">Logística & Estrategia</span>
                     <h3 class="ncard-titulo text-dinamico">Soluciones de alto impacto</h3>
-                    <p class="ncard-desc text-dinamico-p">
-                        Mi terreno son los entornos críticos. He liderado el desarrollo de herramientas de apoyo para
-                        WMS y sistemas SGA que optimizan la operación de gigantes como <b>Bavaria</b> y <b>Huawei</b>,
-                        transformando flujos complejos en procesos digitales fluidos y rentables.
-                    </p>
+                    <p class="ncard-desc text-dinamico-p">Mi terreno son los entornos críticos. He liderado el desarrollo de herramientas de apoyo para WMS y sistemas SGA que optimizan la operación de gigantes como <b>Bavaria</b> y <b>Huawei</b>, transformando flujos complejos en procesos digitales fluidos y rentables.</p>
                 </div>
-
-                <!-- CARD 1: BACKEND Y DATOS (NUEVA) -->
                 <div class="ncard" id="ncard1">
                     <span class="ncard-tag text-dinamico-tag">Backend & Architecture</span>
                     <h3 class="ncard-titulo text-dinamico">El motor bajo el capó</h3>
-                    <p class="ncard-desc text-dinamico-p">
-                        Disfruto diseñando arquitecturas robustas. Mi fuerte es la lógica de programación pura: desde la
-                        creación de <b>APIs escalables</b> en Node.js o Flask, hasta el modelado de bases de datos
-                        (SQL/NoSQL) que soportan el peso del negocio, asegurando que cada consulta sea inmediata y
-                        precisa.
-                    </p>
+                    <p class="ncard-desc text-dinamico-p">Disfruto diseñando arquitecturas robustas. Mi fuerte es la lógica de programación pura: desde la creación de <b>APIs escalables</b> en Node.js o Flask, hasta el modelado de bases de datos (SQL/NoSQL) que soportan el peso del negocio, asegurando que cada consulta sea inmediata y precisa.</p>
                 </div>
-
-                <!-- CARD 2: FRONTEND Y EXPERIENCIA -->
                 <div class="ncard" id="ncard2">
                     <span class="ncard-tag text-dinamico-tag">UI / UX & Frontend</span>
                     <h3 class="ncard-titulo text-dinamico">Interfaces que cobran vida</h3>
-                    <p class="ncard-desc text-dinamico-p">
-                        Creo en el software que da gusto usar. Domino <b>Angular</b> e <b>Ionic</b> para construir
-                        interfaces modernas, integrando experiencias inmersivas con modelos 3D y animaciones que elevan
-                        la percepción de marca y la usabilidad del producto.
-                    </p>
+                    <p class="ncard-desc text-dinamico-p">Creo en el software que da gusto usar. Domino <b>Angular</b> e <b>Ionic</b> para construir interfaces modernas, integrando experiencias inmersivas con modelos 3D y animaciones que elevan la percepción de marca y la usabilidad del producto.</p>
                 </div>
-
-                <!-- CARD 3: FULL-CYCLE & DEPLOY (NUEVA) -->
                 <div class="ncard" id="ncard3">
                     <span class="ncard-tag text-dinamico-tag">Full-Cycle Developer</span>
                     <h3 class="ncard-titulo text-dinamico">De local a producción</h3>
-                    <p class="ncard-desc text-dinamico-p">
-                        Llevo los proyectos hasta la meta. Tengo la capacidad de gestionar el despliegue completo: desde
-                        configurar servidores en la nube hasta publicar y optimizar aplicaciones en las <b>tiendas
-                            oficiales (Play Store)</b>. Código que no está en manos del usuario, es código que no
-                        existe.
-                    </p>
+                    <p class="ncard-desc text-dinamico-p">Llevo los proyectos hasta la meta. Tengo la capacidad de gestionar el despliegue completo: desde configurar servidores en la nube hasta publicar y optimizar aplicaciones en las <b>tiendas oficiales (Play Store)</b>. Código que no está en manos del usuario, es código que no existe.</p>
                 </div>
-
-                <!-- CARD 4: INNOVACIÓN Y ACTITUD -->
-                <div class="ncard" id="ncard4">
-                    <span class="ncard-tag text-dinamico-tag">Berraco Dev | IA</span>
-                    <h3 class="ncard-titulo text-dinamico">ADN de innovación</h3>
-                    <p class="ncard-desc text-dinamico-p">
-                        Subcampeón nacional en <b>SenaSoft</b> y fundador de <b>Berraco Dev</b>. No me quedo con lo
-                        básico: experimento con IA para análisis emocional y lidero equipos pequeños con un enfoque 100%
-                        práctico. Si el reto es difícil, es el doble de interesante.
-                    </p>
-                </div>
-
             </div>
         </div>
 
@@ -163,10 +111,7 @@
 
     <!-- ================= PROYECTOS DESTACADOS ================= -->
     <div class="seccion-proyectos py-5">
-        <!-- Título siempre blanco -->
-        <h2 class="text-titulos text-center mb-5 titulo-animado" style="color: #ffffff !important;">PROYECTOS DESTACADOS
-        </h2>
-
+        <h2 class="text-titulos text-center mb-5 titulo-animado" style="color: #ffffff !important;">PROYECTOS DESTACADOS</h2>
         <div class="container">
             <div class="row justify-content-center g-4">
                 @for (proyecto of proyectosSecundarios; track proyecto.id) {
@@ -176,11 +121,9 @@
                         <h4 class="fw-bold mb-3 text-dinamico-claro">{{ proyecto.nombre }}</h4>
                         <p class="text-peque mb-4 text-dinamico-claro">{{ proyecto.desc }}</p>
                         <div class="tags-container mb-4 mt-auto">
-                            @for (tag of proyecto.tags; track tag) { <span class="tag-badge text-dinamico-claro">{{ tag
-                                }}</span> }
+                            @for (tag of proyecto.tags; track tag) { <span class="tag-badge text-dinamico-claro">{{ tag }}</span> }
                         </div>
-                        <a [href]="proyecto.link" target="_blank"
-                            class="btn-link mt-auto w-100 text-center btn-dinamico-proyecto">
+                        <a [href]="proyecto.link" target="_blank" class="btn-link mt-auto w-100 text-center btn-dinamico-proyecto">
                             {{ proyecto.linkLabel }} <span class="ms-2">→</span>
                         </a>
                     </div>
@@ -200,19 +143,14 @@
                         @for (edu of formacion; track edu.titulo) {
                         <div class="timeline-item" #estItem>
                             <div class="timeline-punto bg-dinamico border-dinamico"></div>
-
                             <h4 class="fw-bold m-0 text-dinamico d-inline-block">{{ edu.titulo }}</h4>
-
-                            <!-- NUEVO: Animación para resaltar logro -->
                             @if (edu.titulo === 'Subcampeón Nacional SenaSoft') {
                             <div class="trofeo-animado ms-2">🏆 ¡Destacado!</div>
                             }
-
                             <h6 class="text-peque text-muted mt-1 text-dinamico-p">{{ edu.inst }} | {{ edu.fecha }}</h6>
                             <p class="text-peque mt-2 text-dinamico-p">{{ edu.nota }}</p>
                             @if (edu.link) {
-                            <a [href]="edu.link" target="_blank" class="cv-btn text-dinamico-btn d-inline-block mt-2"
-                                style="padding: 6px 18px; font-size: 0.8rem;">Ver publicación oficial</a>
+                            <a [href]="edu.link" target="_blank" class="cv-btn text-dinamico-btn d-inline-block mt-2" style="padding: 6px 18px; font-size: 0.8rem;">Ver publicación oficial</a>
                             }
                         </div>
                         }
@@ -228,29 +166,21 @@
             <div class="row align-items-center">
                 <div class="col-12 col-lg-5 text-center text-lg-start mb-5 mb-lg-0 z-index-content" #contItem>
                     <h2 class="text-titulos mb-3 titulo-animado text-dinamico">¿Creamos algo genial?</h2>
-                    <p class="text-medium mb-4 text-dinamico-p">Estoy listo para escalar tu próxima gran aplicación o
-                        sistema corporativo.</p>
+                    <p class="text-medium mb-4 text-dinamico-p">Estoy listo para escalar tu próxima gran aplicación o sistema corporativo.</p>
 
-                    <a href="./assets/Kevin_Fraile_CV.pdf" target="_blank"
-                        class="cv-btn text-dinamico-btn d-inline-block mb-4">Descargar CV (PDF)</a>
+                    <a href="./assets/Kevin_Fraile_CV.pdf" target="_blank" class="cv-btn text-dinamico-btn d-inline-block mb-4">Descargar CV (PDF)</a>
 
                     <div class="d-flex justify-content-center justify-content-lg-start gap-3 flex-wrap">
-                        <a href="mailto:kevinfraile.c@gmail.com" class="red-btn bg-glass"><img
-                                src="https://img.icons8.com/ios-filled/50/000000/mail.png" class="icono-red"></a>
-                        <a href="https://wa.me/573209560150" target="_blank" class="red-btn bg-glass"><img
-                                src="https://img.icons8.com/ios-filled/50/000000/whatsapp--v1.png"
-                                class="icono-red"></a>
-                        <a href="https://www.linkedin.com/in/kevin-andres-fraile-camacho-b6a79923a/" target="_blank"
-                            class="red-btn bg-glass"><img src="https://img.icons8.com/ios-filled/50/000000/linkedin.png"
-                                class="icono-red"></a>
+                        <a href="mailto:kevinfraile.c@gmail.com" class="red-btn bg-glass"><img src="https://img.icons8.com/ios-filled/50/000000/mail.png" class="icono-red"></a>
+                        <a href="https://wa.me/573209560150" target="_blank" class="red-btn bg-glass"><img src="https://img.icons8.com/ios-filled/50/000000/whatsapp--v1.png" class="icono-red"></a>
+                        <a href="https://www.linkedin.com/in/kevin-andres-fraile-camacho-b6a79923a/" target="_blank" class="red-btn bg-glass"><img src="https://img.icons8.com/ios-filled/50/000000/linkedin.png" class="icono-red"></a>
                     </div>
                 </div>
 
                 <div class="col-12 col-lg-7 d-flex justify-content-center position-relative">
                     <div class="ventana-3d-wrapper">
                         <div class="blur-layer"></div>
-                        <app-zorro-blanco-explicando3-d
-                            style="width: 100%; height: 100%; position: absolute; top:0; left:0;"></app-zorro-blanco-explicando3-d>
+                        <app-zorro-blanco-explicando3-d style="width: 100%; height: 100%; position: absolute; top:0; left:0;"></app-zorro-blanco-explicando3-d>
                     </div>
                 </div>
             </div>
@@ -262,20 +192,15 @@
         <div class="container py-5">
             <div class="row g-4">
                 <div class="col-12 col-lg-4">
-                    <h3 class="fw-bold mb-2 text-white" style="font-family: 'JetBrains Mono', monospace;">Kevin
-                        Andrés<span class="footer-logo-accent">.</span></h3>
-                    <p class="footer-text text-peque">Ingeniero de Software Full Stack en Mosquera, Colombia.
-                        Especializado en Angular, Ionic y arquitectura de datos.</p>
+                    <h3 class="fw-bold mb-2 text-white" style="font-family: 'JetBrains Mono', monospace;">Kevin Andrés<span class="footer-logo-accent">.</span></h3>
+                    <p class="footer-text text-peque">Ingeniero de Software Full Stack en Mosquera, Colombia. Especializado en Angular, Ionic y arquitectura de datos.</p>
                 </div>
                 <div class="col-12 col-md-4 col-lg-3 offset-lg-1">
                     <h6 class="footer-group-title text-uppercase fw-bold mb-3 text-dinamico-kicker">Proyectos</h6>
                     <ul class="list-unstyled d-flex flex-column gap-2 text-peque">
-                        <li><a href="https://tenderzl.zonalogistica.com.co/#/inicio" target="_blank"
-                                class="footer-link">Tender WMS</a></li>
-                        <li><a href="https://sgazl.zonalogistica.com.co/#/" target="_blank" class="footer-link">Sistema
-                                SGA</a></li>
-                        <li><a href="https://play.google.com/store/apps/details?id=com.atarabi.app" target="_blank"
-                                class="footer-link">Atarabi AI</a></li>
+                        <li><a href="https://tenderzl.zonalogistica.com.co/#/inicio" target="_blank" class="footer-link">Tender WMS</a></li>
+                        <li><a href="https://sgazl.zonalogistica.com.co/#/" target="_blank" class="footer-link">Sistema SGA</a></li>
+                        <li><a href="https://play.google.com/store/apps/details?id=com.atarabi.app" target="_blank" class="footer-link">Atarabi AI</a></li>
                     </ul>
                 </div>
                 <div class="col-12 col-md-4 col-lg-2">
@@ -283,8 +208,7 @@
                     <ul class="list-unstyled d-flex flex-column gap-2 text-peque">
                         <li><a href="mailto:kevinfraile.c@gmail.com" class="footer-link">Email</a></li>
                         <li><a href="https://wa.me/573209560150" target="_blank" class="footer-link">WhatsApp</a></li>
-                        <li><a href="https://www.linkedin.com/in/kevin-andres-fraile-camacho-b6a79923a/" target="_blank"
-                                class="footer-link">LinkedIn</a></li>
+                        <li><a href="https://www.linkedin.com/in/kevin-andres-fraile-camacho-b6a79923a/" target="_blank" class="footer-link">LinkedIn</a></li>
                     </ul>
                 </div>
                 <div class="col-12 col-md-4 col-lg-2">
@@ -302,5 +226,4 @@
             </div>
         </div>
     </footer>
-
 </div>
